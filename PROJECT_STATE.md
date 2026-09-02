@@ -102,13 +102,14 @@ The platform layer (engine, setup tooling, digest delivery) is shared infrastruc
 
 ## Current state
 
-- [ ] Architecture document (this file)
-- [ ] Repo structure created
-- [ ] Platform layer: agent engine scoped from Apple CDA work
+- [x] Architecture document (this file)
+- [x] Repo structure created
+- [x] Base subject library defined — five mandatory subjects with scope statements committed to `base/subjects/`
+- [ ] Platform layer: agent engine
 - [ ] Platform layer: setup tooling
 - [ ] Platform layer: digest collector and delivery
-- [ ] Base subject library defined
 - [ ] UI shell (neutral, key-driven)
+- [ ] Client template finalized
 - [ ] First client config (pilot)
 
 ---
@@ -122,14 +123,17 @@ The platform layer (engine, setup tooling, digest delivery) is shared infrastruc
 | Config sealed after handoff | Preserves governance integrity; changes require a new engagement |
 | Request log as `.md` file | Human-readable, auditable, no database required |
 | Daily digest cadence | Batches requests to avoid noise; keeps owners informed without overwhelming |
-| Shared base subjects, client-selected | Consistent platform quality floor; clients own their Tier 2 |
+| Shared base subjects, mandatory for all clients | Consistent platform quality floor; no opt-out |
+| Five base subjects at launch | Plain language, accessibility, inclusive language, terminology governance, voice and tone |
+| Each subject has explicit in/out of scope | Prevents client misunderstanding; sets clear agent boundaries |
 | Discovery/setup as consulting engagement | Ensures each instance is properly configured; creates a natural business model |
 
 ---
 
 ## Open questions
 
-- What does the base subject library contain at launch? (Candidates: plain language, accessibility, inclusive language, terminology governance)
 - How is the daily digest delivered — email, Slack, or something else?
 - Does the UI need any light branding per client, or is neutral always sufficient?
 - What triggers a "new engagement" for post-handoff changes — size of change, governance tier affected, or client request?
+- For voice and tone: is the base subject a scaffold (stays active under client docs) or a placeholder (superseded once client docs are in place)?
+
