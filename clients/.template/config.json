@@ -1,0 +1,24 @@
+{
+  "client": {
+    "name": "",
+    "key": "",
+    "created": "",
+    "handoff_date": ""
+  },
+  "owners": [
+    {
+      "name": "",
+      "email": "",
+      "role": ""
+    }
+  ],
+  "digest": {
+    "delivery": "",
+    "cadence": "daily"
+  },
+  "base_subjects": [],
+  "ui": {
+    "accent_color": "",
+    "logo": ""
+  }
+}
