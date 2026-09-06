@@ -45,3 +45,39 @@ The history travels with the content rather than living only in the platform. It
 - Log architecture — the platform logs we're building now are a precursor; the content trail extends that concept to the artifact level.
 
 ---
+
+---
+
+## Self-service subscription tier
+
+**Origin:** Session 2026-09-06
+
+**The idea**
+A lower-touch, lower-cost version of the platform delivered as a subscription with a setup wizard. Clients configure their own instance without a consulting engagement with Keri.
+
+**The fuller vision**
+The current model requires Keri's involvement for every client — discovery, configuration, and handoff. A self-service tier would allow clients to configure their own instance through a guided setup wizard, reducing the cost and time of onboarding. Keri's role shifts from active configurator to platform maintainer and optional upgrade path.
+
+This could serve smaller clients, clients with simpler content needs, or clients who want to try the platform before committing to a full engagement.
+
+**Product implications**
+- Setup wizard replaces the discovery engagement for self-service clients
+- Configuration is more constrained — fewer custom options, more opinionated defaults
+- Voice and tone customization may be limited or wizard-driven rather than collaborative
+- Support model changes — Keri is not the first line of support for self-service clients
+- Upgrade path from self-service to full engagement should be defined
+
+**Potential tiers**
+- Self-service subscription — setup wizard, constrained config, lower price point
+- Consulting engagement — current model, full customization, Keri-configured
+
+**Open questions**
+- What is the right constraint level for self-service? How much customization is too much without Keri's expertise guiding it?
+- How does voice and tone work in self-service — wizard-driven options, or always the Keri-defined default?
+- What does the upgrade path look like — can a self-service config be imported into a full engagement?
+- What support model works for self-service clients?
+
+**Dependencies**
+- Setup wizard UI — significant build effort
+- Constrained config schema — a subset of the full config.json
+- Pricing and business model decisions
