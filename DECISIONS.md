@@ -193,3 +193,14 @@ Decisions are logged in the order they were made. Session dates are noted for re
 **Reasoning:** Separating fit assessment from configuration prevents wasted effort on clients who aren't a good match. The questionnaire ensures configuration inputs are complete and accurate before the setup prompt runs.
 
 **Alternatives considered:** Single setup session covering fit and config together — rejected because it conflates two different conversations with different goals and different participants.
+
+---
+
+### Client questionnaire: owner-coordinated, section-delegable
+**Decision:** The client questionnaire is owned by the content owner/admin. They receive it, review it, determine which sections belong to which teams, and are responsible for returning it complete. Some sections may be delegated to other team members — a marketing lead, a PM, an HR contact — for completion. The questionnaire is delivered in advance of a follow-up meeting; Keri and the client review it together to fill any gaps.
+
+**Context:** Needed to define how the questionnaire is delivered, who completes it, and how multi-stakeholder input is handled.
+
+**Reasoning:** The content owner is the right primary owner — they have the broadest view of the organization's content structure and the authority to assign responsibility. Delegation acknowledges that some questions (domain ownership, routing, stakeholder lists) may require input from people who weren't in the discovery meeting. The advance-plus-review model ensures the questionnaire is as complete as possible before the follow-up meeting, making that meeting more productive.
+
+**Future possibility:** A version of the questionnaire that supports formal delegation — the owner assigns sections to specific people, who receive and complete their portion independently before the owner assembles the full response. Noted in IDEAS.md.
