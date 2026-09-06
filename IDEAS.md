@@ -81,3 +81,29 @@ This could serve smaller clients, clients with simpler content needs, or clients
 - Setup wizard UI — significant build effort
 - Constrained config schema — a subset of the full config.json
 - Pricing and business model decisions
+
+---
+
+## Delegable client questionnaire
+
+**Origin:** Session 2026-09-06
+
+**The idea**
+A version of the client questionnaire that supports formal section delegation. The content owner assigns specific sections to specific people — a marketing lead, a PM, an HR contact — who receive and complete their portion independently. The owner assembles the full response before submitting.
+
+**The fuller vision**
+Currently the questionnaire is a single document the content owner coordinates manually. A delegable version would make that coordination explicit and trackable — each section has a named owner, a deadline, and a completion status. The content owner sees what's been completed and what's outstanding before the follow-up meeting with Keri.
+
+**Potential surfaces**
+- A shared document with named section owners (lightweight, low-build)
+- A simple web form that routes sections to different email addresses
+- A dedicated questionnaire tool within the platform setup flow
+
+**Open questions**
+- How does the content owner assign sections — by name, by role, or by domain?
+- What happens if a delegated section comes back incomplete?
+- Does Keri see the delegation structure, or just the completed questionnaire?
+
+**Dependencies**
+- Content owner role must be clearly established before delegation is possible
+- Requires either a shared document infrastructure or a lightweight web form
