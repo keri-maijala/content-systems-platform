@@ -1,24 +1,129 @@
 {
   "client": {
-    "name": "",
     "key": "",
-    "created": "",
-    "handoff_date": ""
+    "name": "",
+    "engagement": {
+      "active": false,
+      "consultant": "keri@example.com"
+    }
   },
-  "owners": [
+
+  "roles": {
+    "content_owner": {
+      "description": "The content professional. Configures the system, governs rules, and uses the agent day to day. Full access across all domains.",
+      "can_override_governance": true,
+      "override_scope": "all",
+      "can_view_logs": true,
+      "log_scope": "all",
+      "can_resolve_requests": true,
+      "can_configure": true
+    },
+    "domain_owner": {
+      "description": "Owns a specific content domain. Override rights and log visibility scoped to their assigned domain only.",
+      "can_override_governance": true,
+      "override_scope": "domain",
+      "can_view_logs": true,
+      "log_scope": "domain",
+      "can_resolve_requests": true,
+      "can_configure": false
+    },
+    "contributor": {
+      "description": "Everyday user from any function. Creates and generates content within guardrails. No override or log access.",
+      "can_override_governance": false,
+      "override_scope": "none",
+      "can_view_logs": false,
+      "log_scope": "none",
+      "can_resolve_requests": false,
+      "can_configure": false
+    }
+  },
+
+  "users": [
     {
+      "id": "",
       "name": "",
       "email": "",
-      "role": ""
+      "role": "contributor",
+      "domains": []
     }
   ],
-  "digest": {
-    "delivery": "",
-    "cadence": "daily"
+
+  "domains": [
+    {
+      "id": "",
+      "name": "",
+      "description": "",
+      "owner": "",
+      "stakeholders": [
+        {
+          "email": "",
+          "relationship": "informed"
+        }
+      ],
+      "override_permitted": true,
+      "override_flagging": {
+        "enabled": true,
+        "threshold_per_item": 3,
+        "threshold_per_area": 5,
+        "notify": []
+      },
+      "routing": {
+        "governance_denial": {
+          "owner": "",
+          "log": "logs/requests.md",
+          "notify": []
+        },
+        "content_request": {
+          "owner": "",
+          "log": "logs/requests.md",
+          "notify": []
+        }
+      }
+    }
+  ],
+
+  "escalation": {
+    "default_path": "internal",
+    "consultant_escalation": false,
+    "consultant_email": "keri@example.com",
+    "conditions": ""
   },
-  "base_subjects": [],
-  "ui": {
-    "accent_color": "",
-    "logo": ""
+
+  "logs": {
+    "informational": {
+      "path": "logs/informational.md",
+      "include_in_digest": false
+    },
+    "overrides": {
+      "path": "logs/overrides.md",
+      "always_visible_to_admin": true,
+      "include_in_digest": true
+    }
+  },
+
+  "digest": {
+    "enabled": true,
+    "cadence": "daily",
+    "delivery_method": "",
+    "recipients": {
+      "content_owner": true,
+      "domain_owners": true,
+      "custom": []
+    },
+    "include_informational": false,
+    "include_actionable": true,
+    "include_overrides": true
+  },
+
+  "subjects": {
+    "plain_language": { "enabled": true },
+    "accessibility": { "enabled": true },
+    "inclusive_language": { "enabled": true },
+    "terminology_governance": { "enabled": true },
+    "voice_and_tone": {
+      "enabled": true,
+      "customized": false,
+      "custom_doc": ""
+    }
   }
 }
