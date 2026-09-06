@@ -233,3 +233,32 @@ Decisions are logged in the order they were made. Session dates are noted for re
 **Context:** Needed to define how the Keri-facing report is organized.
 
 **Reasoning:** Mirroring the questionnaire structure makes it easy for Keri to cross-reference against the original. Including verbatims alongside flags gives Keri the client's exact words — useful for follow-up conversations where tone and phrasing matter.
+
+---
+
+### Two portals: client portal and product owner view
+**Decision:** The platform has two portals. The client portal is a single adaptive UI serving all three client roles — contributor, domain owner, content owner. The product owner view is a privileged layer on top of the same system, used by Keri (and future consultants) for platform administration, client management, and cross-client visibility. Keri can also use the agent in the product owner view exactly as a client would — seeing what they see.
+
+**Context:** The agent engine needs to know which portal it's serving to load the right prompts and permissions. Two portals were implied by the architecture but had not been explicitly defined.
+
+**Reasoning:** A single adaptive client UI keeps the experience consistent as users gain access to new areas — no jarring context switches. The product owner view as a privileged layer rather than a separate product keeps the system unified and allows Keri to move naturally between administration and agent use.
+
+**Alternatives considered:** Separate portals per role — rejected because role transitions (e.g., a contributor becoming a domain owner) should feel seamless, not like switching tools. Separate Keri product — rejected because Keri needs to see exactly what clients see when testing or supporting an instance.
+
+---
+
+### Client portal role transitions: permission-triggered, not toggle-driven
+**Decision:** The client portal UI adapts automatically when a user's permissions change — for example, when a domain owner grants another user access to their domain. The user does not manually switch between role views. The interface expands or contracts based on what they currently have access to.
+
+**Context:** Needed to define what triggers a role shift in the adaptive UI.
+
+**Reasoning:** Permission-triggered adaptation is less disruptive than a manual toggle — the user gains access to new capabilities naturally, as part of a workflow, rather than having to switch modes. It also means the UI reflects reality at all times rather than depending on the user to manage their own view.
+
+---
+
+### Product owner view: Keri sees what the client sees
+**Decision:** When Keri uses the agent in the product owner view, she sees exactly what the client sees for that instance — the same agent, the same config, the same constraints. This is her primary way of testing and supporting a client instance.
+
+**Context:** Needed to define how Keri uses the agent in her own portal.
+
+**Reasoning:** Seeing exactly what the client sees is the only reliable way to test and support an instance. A separate "Keri mode" of the agent would introduce drift between what Keri tests and what clients experience.
