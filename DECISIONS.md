@@ -204,3 +204,32 @@ Decisions are logged in the order they were made. Session dates are noted for re
 **Reasoning:** The content owner is the right primary owner — they have the broadest view of the organization's content structure and the authority to assign responsibility. Delegation acknowledges that some questions (domain ownership, routing, stakeholder lists) may require input from people who weren't in the discovery meeting. The advance-plus-review model ensures the questionnaire is as complete as possible before the follow-up meeting, making that meeting more productive.
 
 **Future possibility:** A version of the questionnaire that supports formal delegation — the owner assigns sections to specific people, who receive and complete their portion independently before the owner assembles the full response. Noted in IDEAS.md.
+
+---
+
+### Questionnaire flow: client-submitted, agent-analyzed, two outputs
+**Decision:** The client submits the completed questionnaire directly to the agent — not to Keri. The agent produces two outputs: a client-facing confirmation summary (clean, no flags) reviewed section by section with the client, and a Keri-facing report (mirroring the questionnaire structure, followed by flags with verbatim client responses) sent to Keri after client confirmation.
+
+**Context:** Initially framed the questionnaire as something Keri processes. Clarified that the agent receives and analyzes it first, surfaces a summary to the client for confirmation, then sends Keri a separate report with analysis the client doesn't see.
+
+**Reasoning:** The agent doing the first-pass analysis saves Keri time and ensures she arrives at the follow-up meeting with a clear picture of what's complete, what's missing, and what needs discussion. Keeping the Keri-facing flags invisible to the client preserves the client relationship — they see a clean confirmation of what they submitted, not a list of problems.
+
+**Alternatives considered:** Keri processes the questionnaire directly — rejected because it adds manual work and delays the analysis. Single output seen by both client and Keri — rejected because flags and contradictions should not be surfaced to the client before Keri has had a chance to discuss them.
+
+---
+
+### Questionnaire agent analysis: hard flags to client, soft flags to Keri
+**Decision:** When the agent analyzes the questionnaire, obvious compliance issues (e.g., client claims no compliance requirements but lists a regulated domain) are flagged directly with the client during the confirmation step. Softer issues — ambiguous scope, governance gaps, broad domains that may be hard to govern — are flagged only in the Keri-facing report.
+
+**Context:** Needed to define what the agent surfaces to the client vs. keeps for Keri.
+
+**Reasoning:** Hard flags (compliance contradictions) need to be resolved before the questionnaire can be treated as accurate — the client needs to correct them. Soft flags are matters of judgment that Keri is better positioned to address in conversation with the client, where context and relationship can shape how they're raised.
+
+---
+
+### Keri-facing report format: mirror then flags with verbatims
+**Decision:** The Keri-facing report mirrors the questionnaire structure — section by section summary of what the client provided — followed by a flags section that includes each flag with the verbatim client response that triggered it.
+
+**Context:** Needed to define how the Keri-facing report is organized.
+
+**Reasoning:** Mirroring the questionnaire structure makes it easy for Keri to cross-reference against the original. Including verbatims alongside flags gives Keri the client's exact words — useful for follow-up conversations where tone and phrasing matter.
