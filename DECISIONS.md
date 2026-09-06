@@ -118,3 +118,36 @@ Decisions are logged in the order they were made. Session dates are noted for re
 
 **Alternatives considered:** Richer session summaries — rejected in favor of a dedicated log because session summaries serve a different purpose (re-orientation) and shouldn't be burdened with full decision context. Both (DECISIONS.md + richer summaries) — considered but the dedicated log is sufficient; session summaries can stay lean.
 
+
+---
+
+### Governance flag triggers: persistence signals within a session
+**Decision:** The agent recognizes a user is pushing against a recommendation based on three signals within a single session: explicit pushback on the same recommendation, aggressive or frustrated tone, or questions that suggest the user is trying to work around a recommendation. Persistence is not tracked across sessions.
+
+**Context:** Needed to define what "continuing to override" means in practice so the agent can recognize it reliably.
+
+**Reasoning:** Within-session tracking is sufficient and avoids the complexity of cross-session state. The three signals together cover the realistic range of how pushback actually presents — direct disagreement, emotional escalation, and indirect workarounds. Limiting to within-session keeps the model simple and avoids the agent carrying forward assumptions from previous interactions.
+
+**Alternatives considered:** Cross-session tracking — rejected as unnecessarily complex and potentially feels surveillance-like to users.
+
+---
+
+### Governance flag access: any user can request
+**Decision:** Any user — regardless of role — can explicitly request a governance flag on their content.
+
+**Context:** Needed to define whether flag requests are role-gated.
+
+**Reasoning:** A contributor who wants to understand whether their content conflicts with guidelines should be able to ask. Restricting flag requests to domain owners or above creates unnecessary friction for users who are trying to do the right thing. The flag itself surfaces the governance layer — what happens next (override, log, escalate) is where role permissions apply.
+
+**Alternatives considered:** Domain owners and above only — rejected because it unnecessarily restricts access to governance information for users who are actively seeking it.
+
+---
+
+### Governance flag tone: conversational, observational, matter-of-fact
+**Decision:** When a governance flag appears, the agent frames it conversationally and observationally — stating what it is noticing without alarm or formality. Example framing: "It looks like you need content that might go against our guidelines. Here's what we can do."
+
+**Context:** Needed to define how the flag moment feels to the user — whether it's a hard stop, a formal process, or something in between.
+
+**Reasoning:** Matter-of-fact framing keeps the interaction feeling like a conversation rather than a compliance process. Observational language ("it looks like") is non-accusatory and gives the user room to clarify if the agent has misread the situation. Presenting options immediately ("here's what we can do") moves the interaction forward rather than leaving the user at a dead end.
+
+**Alternatives considered:** Formal/procedural framing — rejected because it breaks the conversational tone established across all other interaction patterns. Alarm or warning framing — rejected because it feels punitive and may cause users to avoid the agent rather than engage with it.
