@@ -107,3 +107,29 @@ Currently the questionnaire is a single document the content owner coordinates m
 **Dependencies**
 - Content owner role must be clearly established before delegation is possible
 - Requires either a shared document infrastructure or a lightweight web form
+
+---
+
+## Consultant permissions model
+
+**Origin:** Session 2026-09-06
+
+**The idea**
+A permissions model for consultants working under Keri — defining what access they get in the product owner view, which clients they're assigned to, and what they can and cannot do within those engagements.
+
+**The fuller vision**
+If Keri hires other consultants, they would need access to the product owner view scoped to their assigned clients. The model would need to define:
+- Which clients a consultant is assigned to
+- What they can do within those client instances (review only, configure, full access)
+- Whether they can see across all their assigned clients or only one at a time
+- What Keri can see about their activity
+
+**Open questions**
+- What roles exist within the consultancy — junior consultant, senior consultant, partner?
+- Does role within the consultancy map directly to portal permissions, or are they configured independently?
+- Can a consultant be assigned to a client in read-only mode for training or shadowing purposes?
+- Does the client know which consultant is working on their instance?
+
+**Dependencies**
+- Product owner view must be defined first
+- Consultant role structure depends on how Keri structures her consultancy over time
