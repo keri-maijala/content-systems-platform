@@ -151,3 +151,45 @@ Decisions are logged in the order they were made. Session dates are noted for re
 **Reasoning:** Matter-of-fact framing keeps the interaction feeling like a conversation rather than a compliance process. Observational language ("it looks like") is non-accusatory and gives the user room to clarify if the agent has misread the situation. Presenting options immediately ("here's what we can do") moves the interaction forward rather than leaving the user at a dead end.
 
 **Alternatives considered:** Formal/procedural framing — rejected because it breaks the conversational tone established across all other interaction patterns. Alarm or warning framing — rejected because it feels punitive and may cause users to avoid the agent rather than engage with it.
+
+---
+
+### Client fit: hard disqualifiers and yellow flags
+**Decision:** Client fit is assessed against a defined set of hard disqualifiers and yellow flags. Hard disqualifiers result in declining the engagement. Yellow flags require conditions to be resolved before proceeding.
+
+**Hard disqualifiers:**
+- Expects compliance or legal responsibility to transfer to the platform
+- Expects regulated content to be published without human review
+- Expects the platform to replace a content person with no human in the loop
+- Expects the platform to make final brand or business decisions
+- No one in the organization owns content — no viable content owner/admin
+- No defined or definable content domains
+- Leadership unwilling to commit to a discovery engagement
+- No appetite for any governance layer whatsoever
+
+**Yellow flags:**
+- Very small team where one person wears all roles
+- Heavily regulated industry without explicit human review in their process
+- Strong existing brand guidelines (likely requires voice and tone customization)
+- Expects self-service under the current engagement model
+- Leadership acknowledges content chaos but hasn't committed to addressing it
+
+**Context:** Needed to define what makes a client a good fit vs. not, to protect both the client and the platform from mismatched engagements.
+
+**Reasoning:** Hard disqualifiers protect against engagements that would fail — either because the client's expectations are fundamentally misaligned with what the platform does, or because their organizational structure can't support it. Yellow flags are worth exploring because they're often resolvable with the right conversation.
+
+**Key clarifications made during definition:**
+- "No existing content" is not a disqualifier — the platform's generation capabilities serve clients starting from scratch
+- "Content chaos" is not a disqualifier — creating order from chaos is a core use case
+- Self-service expectation is a yellow flag under the current model, not a permanent disqualifier — a future self-service tier is a viable product direction
+
+---
+
+### Discovery process: three phases before configuration
+**Decision:** The setup process has three phases before configuration begins. Phase 1: discovery meeting (fit assessment). Phase 2: client questionnaire (configuration inputs). Phase 3: setup prompt (config generation). Each phase feeds the next.
+
+**Context:** Initially framed setup as a single prompt. Clarified that Keri has an initial meeting with the client before any configuration work begins, and a questionnaire follows that meeting to gather the detailed inputs needed for configuration.
+
+**Reasoning:** Separating fit assessment from configuration prevents wasted effort on clients who aren't a good match. The questionnaire ensures configuration inputs are complete and accurate before the setup prompt runs.
+
+**Alternatives considered:** Single setup session covering fit and config together — rejected because it conflates two different conversations with different goals and different participants.
