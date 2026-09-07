@@ -1,0 +1,47 @@
+@import '@fontsource/fraunces/400.css';
+@import '@fontsource/fraunces/600.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F7F6F3;
+  --bg-secondary: #E8E4DC;
+  --navy: #1A1A2E;
+  --blue: #4A6FA5;
+  --green: #2D5016;
+  --text: #1A1A2E;
+  --text-muted: #6B7280;
+  --border: #D9D4C9;
+  --white: #FFFFFF;
+  --agent-bg: #FFFFFF;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Fraunces', Georgia, serif;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+.font-display {
+  font-family: 'Fraunces', Georgia, serif;
+}
