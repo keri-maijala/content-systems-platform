@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Nav from './components/Nav';
 import AgentWorkspace from './components/AgentWorkspace';
@@ -8,28 +8,43 @@ import PlaceholderView from './components/PlaceholderView';
 
 type Role = 'contributor' | 'domain_owner' | 'content_owner';
 
-// Demo config — will be replaced by client config loaded from repo
-const DEMO_CONFIG = {
-  userName: 'Alex Rivera',
-  clientName: 'Acme Co.',
-  role: 'content_owner' as Role,
-  domains: ['Marketing', 'Product', 'Legal'],
-};
+interface ClientConfig {
+  clientKey: string;
+  clientName: string;
+  domains: string[];
+  user: {
+    name: string;
+    email: string;
+    role: Role;
+  } | null;
+}
 
 export default function Home() {
   const searchParams = useSearchParams();
   const clientKey = searchParams.get('client') || 'demo';
 
   const [activeView, setActiveView] = useState('agent');
-  const [role] = useState<Role>(DEMO_CONFIG.role);
+  const [config, setConfig] = useState<ClientConfig | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/client?client=${clientKey}`)
+      .then(res => res.json())
+      .then(data => setConfig(data))
+      .catch(() => setConfig(null));
+  }, [clientKey]);
+
+  const role: Role = config?.user?.role || 'contributor';
+  const userName = config?.user?.name || '…';
+  const clientName = config?.clientName || '…';
+  const domains = config?.domains || [];
 
   const renderView = () => {
     switch (activeView) {
       case 'agent':
         return (
           <AgentWorkspace
-            userName={DEMO_CONFIG.userName}
-            clientName={DEMO_CONFIG.clientName}
+            userName={userName}
+            clientName={clientName}
             clientKey={clientKey}
           />
         );
@@ -68,15 +83,15 @@ export default function Home() {
 
   return (
     <div style={{
-      display: 'flex',
+              display: 'flex',
       height: '100vh',
       overflow: 'hidden',
       backgroundColor: 'var(--bg)',
     }}>
       <Nav
         role={role}
-        userName={DEMO_CONFIG.userName}
-        activeDomains={DEMO_CONFIG.domains}
+        userName={userName}
+        activeDomains={domains}
         activeView={activeView}
         onViewChange={setActiveView}
       />
