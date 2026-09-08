@@ -11,6 +11,7 @@ interface Message {
 interface AgentWorkspaceProps {
   userName: string;
   clientName: string;
+  clientKey: string;
 }
 
 const SUGGESTIONS = [
@@ -20,7 +21,7 @@ const SUGGESTIONS = [
   'Check this for inclusive language',
 ];
 
-export default function AgentWorkspace({ userName, clientName }: AgentWorkspaceProps) {
+export default function AgentWorkspace({ userName, clientName, clientKey }: AgentWorkspaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -62,6 +63,7 @@ export default function AgentWorkspace({ userName, clientName }: AgentWorkspaceP
             role: m.role,
             content: m.content,
           })),
+          clientKey,
         }),
       });
 
