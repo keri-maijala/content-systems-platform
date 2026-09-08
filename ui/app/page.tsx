@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Nav from './components/Nav';
 import AgentWorkspace from './components/AgentWorkspace';
 import PlaceholderView from './components/PlaceholderView';
@@ -16,6 +17,9 @@ const DEMO_CONFIG = {
 };
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const clientKey = searchParams.get('client') || 'demo';
+
   const [activeView, setActiveView] = useState('agent');
   const [role] = useState<Role>(DEMO_CONFIG.role);
 
@@ -26,6 +30,7 @@ export default function Home() {
           <AgentWorkspace
             userName={DEMO_CONFIG.userName}
             clientName={DEMO_CONFIG.clientName}
+            clientKey={clientKey}
           />
         );
       case 'requests':
