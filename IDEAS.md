@@ -133,3 +133,55 @@ If Keri hires other consultants, they would need access to the product owner vie
 **Dependencies**
 - Product owner view must be defined first
 - Consultant role structure depends on how Keri structures her consultancy over time
+---
+
+## Client-facing platform explainer and leadership ROI documentation
+
+**Origin:** Session 2026-09-08
+
+**The idea**
+Two related documents: one that explains how the platform works to client teams in plain language, and one that helps clients justify the platform investment to their leadership. Neither is a sales document — they're educational materials that help clients understand what they've bought and make the case internally.
+
+**The fuller vision**
+
+### How it works — for client teams
+
+A plain-language explainer aimed at the people who will use the platform day to day. Not technical. Covers:
+
+- What the platform is and what it does (a shared content design agent configured for your organization)
+- The three things it helps with: writing and reviewing content, maintaining consistency across teams, and surfacing governance issues before they become problems
+- How it's organized (domains, roles, the agent workspace)
+- Who does what (contributors ask questions and get reviews; domain owners manage their area; content owners have full visibility)
+- What happens with requests that go beyond the agent's guidance (logged, routed to the right person, resolved)
+- What the agent won't do (legal, brand identity, final decisions — those stay with your team)
+
+Tone: conversational, confident, non-technical. Written the way a thoughtful colleague would explain it.
+
+### Leadership ROI justification — for client sponsors
+
+A document that helps a content owner or program lead make the case to a director, VP, or CFO. Covers:
+
+- The problem it solves (inconsistent content, high review overhead, governance issues caught late, knowledge siloed in one or two people)
+- What changes with the platform (consistent guidance available to everyone, governance issues surface earlier, content owners spend less time fielding one-off questions, new team members ramp faster)
+- How to frame the value (time saved on review cycles, reduction in back-and-forth, fewer late-stage revisions, lower risk of compliance or brand issues)
+- What it costs and what that buys (consulting engagement + platform access; includes configuration, onboarding, and ongoing guidance)
+- What comparable alternatives look like (style guide maintenance, dedicated content design headcount, ad hoc review processes) and why they fall short
+
+Tone: direct, businesslike, evidence-oriented. Assumes a reader who is skeptical but open.
+
+**Format considerations**
+- Both could live as .md files in a /platform/materials/ directory
+- The team explainer could also be adapted as onboarding content delivered through the platform itself
+- The leadership doc could be a template Keri customizes per client during setup
+- Either could be built as a polished PDF for formal delivery
+
+**Open questions**
+- Should these be generic templates Keri customizes, or generated from client config during setup?
+- Does the leadership doc include specific numbers (hours saved, headcount equivalent) or stay qualitative?
+- Is there a version of the team explainer that lives inside the platform as onboarding content?
+- Should Keri deliver these, or hand them to the client's content owner to deliver internally?
+
+**Dependencies**
+- Client config structure — the team explainer will reference domain names, roles, and contact owners
+- Pricing model — the leadership doc needs to reflect actual engagement cost
+- Setup flow — if these are generated during setup, they need to be part of the setup prompt output
