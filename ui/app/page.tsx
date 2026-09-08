@@ -25,13 +25,46 @@ export default function Home() {
 
   const [activeView, setActiveView] = useState('agent');
   const [config, setConfig] = useState<ClientConfig | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
+    setError(false);
+    setConfig(null);
     fetch(`/api/client?client=${clientKey}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Not found');
+        return res.json();
+      })
       .then(data => setConfig(data))
-      .catch(() => setConfig(null));
+      .catch(() => setError(true));
   }, [clientKey]);
+
+  if (error) {
+    return (
+      <div style={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'var(--bg)',
+        fontFamily: 'Inter, system-ui, sans-serif',
+      }}>
+        <h1 style={{
+          fontSize: '22px',
+          fontFamily: 'Fraunces, Georgia, serif',
+          fontWeight: 600,
+          color: '#1A1A2E',
+          marginBottom: '12px',
+        }}>
+          Client not found
+        </h1>
+        <p style={{ fontSize: '15px', color: '#6B7280', maxWidth: '360px', textAlign: 'center', lineHeight: 1.6 }}>
+          No configuration exists for <strong>{clientKey}</strong>. Check the URL and try again.
+        </p>
+      </div>
+    );
+  }
 
   const role: Role = config?.user?.role || 'contributor';
   const userName = config?.user?.name || '…';
@@ -83,7 +116,7 @@ export default function Home() {
 
   return (
     <div style={{
-              display: 'flex',
+      display: 'flex',
       height: '100vh',
       overflow: 'hidden',
       backgroundColor: 'var(--bg)',
