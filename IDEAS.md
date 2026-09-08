@@ -185,3 +185,46 @@ Tone: direct, businesslike, evidence-oriented. Assumes a reader who is skeptical
 - Client config structure — the team explainer will reference domain names, roles, and contact owners
 - Pricing model — the leadership doc needs to reflect actual engagement cost
 - Setup flow — if these are generated during setup, they need to be part of the setup prompt output
+---
+
+## Client content creation path
+
+**Origin:** Session 2026-09-08
+
+**The idea**
+A recommended path for content creation — from initiation through development to publication — delivered as part of the configured content system for each client. The path is not generic; it's built during discovery based on who the players are, what their roles are, and where human review needs to happen.
+
+**The fuller vision**
+Most clients don't have a defined content process — content gets initiated informally, reviewed inconsistently, and published without a clear record of who approved what. This feature gives them one, configured to their actual org structure rather than a theoretical ideal.
+
+The path covers three phases:
+
+**Initiation** — How content work gets started. Who can initiate a content request? What information needs to accompany a request (audience, channel, journey stage, domain)? Does initiation go through the agent, a form, a ticket, or a conversation?
+
+**Development** — How content moves from request to draft. When does the agent assist, and when does a human write first? What does the agent review, and in what order (plain language, then voice and tone, then terminology, for example)? Are there domain-specific development rules — Legal content handled differently than Marketing content, for instance?
+
+**Human review** — When is human review required, and who does it? This is the piece most clients get wrong — either over-reviewing everything or skipping review entirely. The path defines review triggers (content type, domain, audience, risk level), reviewers (by role and domain), and what approval looks like before content moves forward.
+
+**How it's built**
+The path is defined during discovery, not after. Keri asks about the client's existing process (or lack of one), their team structure, and their risk tolerance during the discovery meeting. The questionnaire captures the specifics — who initiates, who reviews, who approves, what the escalation path looks like.
+
+The configured path ships as part of the client's content system — documented in their config, surfaced in the agent's guidance, and referenced when the agent is helping with content that has process implications.
+
+**Potential surfaces**
+- A content path document in the client's config directory, referenced by the agent
+- A visual flow delivered as part of onboarding materials
+- Agent guidance that references the path when relevant ("Based on your content path, this would go to [domain owner] for review before publishing")
+- A section in the client portal showing the path and its current status for in-flight content
+
+**Open questions**
+- How much of the path is configurable vs. opinionated by Keri? Some clients will want full control; others will want Keri to recommend a path based on their org.
+- How does the agent know when content is at a review stage vs. still in development?
+- Does the path vary by domain, or is one path applied across the whole client?
+- What happens when someone skips a step — is that logged, flagged, or silently permitted?
+- Is the path a living document the client can update post-handoff, or fixed at setup?
+
+**Dependencies**
+- Discovery meeting guide — the path questions need to be added or referenced
+- Client questionnaire — needs a section on content process and review structure
+- Domain model — review ownership likely maps to domain owners
+- Role model — initiation and approval rights connect to the existing three-tier model
