@@ -49,6 +49,8 @@ The platform serves two audiences:
 /clients/
   .template/
     config.json        # Client config template — domain-based role model
+  demo/
+    config.json        # Demo client — Acme Co., three domains, four users
   [client-key]/
     config.json
     guides/
@@ -67,9 +69,15 @@ The platform serves two audiences:
   app/
     api/agent/         # Agent engine API route — streaming, Anthropic API
     components/        # Nav, AgentWorkspace, PlaceholderView
+    lib/               # assemblePrompt.ts — dynamic prompt assembly
     globals.css
     layout.tsx
     page.tsx
+  package.json
+  next.config.mjs
+  tsconfig.json
+  tailwind.config.ts
+  postcss.config.mjs
 
 IDEAS.md
 DECISIONS.md
@@ -118,10 +126,13 @@ A flag is raised only when the user explicitly requests a governance check, or c
 - [x] Portal definitions
 - [x] UI shell — Next.js app with adaptive nav and agent workspace
 - [x] Agent engine — API route wired to Anthropic API with streaming
+- [x] Next.js project scaffolding — package.json, next.config.mjs, tsconfig.json, tailwind, postcss
+- [x] App running locally — confirmed working at localhost:3001
+- [x] Dynamic prompt assembly — assemblePrompt.ts reads from repo files at runtime
+- [x] Demo client config — Acme Co., three domains (Marketing, Product, Legal), four users
 - [x] DECISIONS.md — full decisions log
 - [x] IDEAS.md — ideas log
-- [ ] Dynamic prompt assembly — load prompts from client config by key
-- [ ] Client key routing — load correct config per client
+- [ ] Client key routing — pass client key from UI, load correct config per user
 - [ ] Requests, logs, domains, admin views in UI
 - [ ] Product owner view
 - [ ] Digest collector and delivery
@@ -146,6 +157,8 @@ See DECISIONS.md for full context and reasoning.
 | Two portals | Client portal and product owner view |
 | Questionnaire flow | Client submits to agent, agent confirms with client, Keri gets internal report |
 | Tech stack | Next.js, React, Anthropic API, streaming responses |
+| Dynamic prompt assembly | assemblePrompt.ts assembles system prompt from repo files at runtime |
+| Demo client | Acme Co. — used to verify full config-to-prompt chain |
 
 ---
 
