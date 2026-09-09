@@ -2,9 +2,9 @@ import { NextRequest } from 'next/server';
 import { assembleSystemPrompt } from '../../lib/assemblePrompt';
 
 export async function POST(req: NextRequest) {
-  const { messages, clientKey } = await req.json();
+  const { messages, clientKey, user } = await req.json();
 
-  const systemPrompt = assembleSystemPrompt(clientKey || 'demo');
+  const systemPrompt = assembleSystemPrompt(clientKey || 'demo', user);
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
