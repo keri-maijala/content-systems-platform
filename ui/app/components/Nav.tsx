@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 type Role = 'contributor' | 'domain_owner' | 'content_owner';
 
 interface NavProps {
@@ -10,11 +8,10 @@ interface NavProps {
   activeDomains?: string[];
   activeView: string;
   onViewChange: (view: string) => void;
+  onSignOut: () => void;
 }
 
-export default function Nav({ role, userName, activeDomains = [], activeView, onViewChange }: NavProps) {
-  const [expanded, setExpanded] = useState(false);
-
+export default function Nav({ role, userName, activeDomains = [], activeView, onViewChange, onSignOut }: NavProps) {
   const navItems = [
     { id: 'agent', label: 'Agent', roles: ['contributor', 'domain_owner', 'content_owner'] },
     { id: 'requests', label: 'Requests', roles: ['domain_owner', 'content_owner'] },
@@ -35,7 +32,7 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
     <nav style={{
       width: '220px',
       minHeight: '100vh',
-      backgroundColor: 'var(--navy)',
+      backgroundColor: '#1A1A2E',
       display: 'flex',
       flexDirection: 'column',
       padding: '0',
@@ -50,7 +47,7 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
           fontFamily: 'Fraunces, Georgia, serif',
           fontSize: '15px',
           fontWeight: 600,
-          color: 'var(--white)',
+          color: '#FFFFFF',
           lineHeight: 1.3,
           letterSpacing: '-0.01em',
         }}>
@@ -71,21 +68,20 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
               padding: '10px 24px',
               background: activeView === item.id ? 'rgba(74, 111, 165, 0.25)' : 'transparent',
               border: 'none',
-              borderLeft: activeView === item.id ? '2px solid var(--blue)' : '2px solid transparent',
-              color: activeView === item.id ? 'var(--white)' : 'rgba(255,255,255,0.55)',
+              borderLeft: activeView === item.id ? '2px solid #4A6FA5' : '2px solid transparent',
+              color: activeView === item.id ? '#FFFFFF' : 'rgba(255,255,255,0.55)',
               fontSize: '14px',
               fontFamily: 'Inter, system-ui, sans-serif',
               fontWeight: activeView === item.id ? 500 : 400,
               cursor: 'pointer',
               transition: 'all 0.15s ease',
-              letterSpacing: '0',
             }}
           >
             {item.label}
           </button>
         ))}
 
-        {/* Domain list for domain owners */}
+        {/* Domain list */}
         {(role === 'domain_owner' || role === 'content_owner') && activeDomains.length > 0 && (
           <div style={{ marginTop: '24px', padding: '0 24px' }}>
             <div style={{
@@ -111,14 +107,14 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
         )}
       </div>
 
-      {/* User identity */}
+      {/* User identity + sign out */}
       <div style={{
         padding: '16px 24px',
         borderTop: '1px solid rgba(255,255,255,0.08)',
       }}>
         <div style={{
           fontSize: '13px',
-          color: 'var(--white)',
+          color: '#FFFFFF',
           fontWeight: 500,
           marginBottom: '2px',
         }}>
@@ -127,11 +123,25 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
         <div style={{
           fontSize: '12px',
           color: 'rgba(255,255,255,0.4)',
+          marginBottom: '12px',
         }}>
           {roleLabel}
         </div>
+        <button
+          onClick={onSignOut}
+          style={{
+            fontSize: '12px',
+            color: 'rgba(255,255,255,0.35)',
+            background: 'none',
+            border: 'none',
+            padding: '0',
+            cursor: 'pointer',
+            fontFamily: 'Inter, system-ui, sans-serif',
+          }}
+        >
+          Sign out
+        </button>
       </div>
     </nav>
   );
 }
-
