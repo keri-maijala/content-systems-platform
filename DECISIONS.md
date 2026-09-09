@@ -98,3 +98,14 @@
 **Reasoning:** Role-aware responses are core to the platform's permission model. A contributor should not be offered override options they don't have access to. A domain owner should have their responses scoped to their domains. Passing user context in the system prompt is the right mechanism — it's invisible to the user and shapes the agent's behavior from the first message.
 
 **Current limitation:** The user context is currently populated from the config file (first content owner in the list), not from real authentication. This is a placeholder. When authentication is built, the same prop will be populated from the authenticated user's record — no structural change needed.
+
+---
+
+### Authentication specifics: initial password, forced reset, session length
+**Decision:** Keri sets the initial password for each user during client setup. Users are required to reset their password on first login — they cannot use the Keri-set password beyond that first session. Sessions last 12 hours. No "remember me" option in the initial build.
+
+**Context:** Authentication model was established as username and password credentials. Needed to settle the remaining specifics before building.
+
+**Reasoning:** Keri setting the initial password keeps setup self-contained — no dependency on the user to complete a setup flow before their first login. Forced reset on first login ensures Keri never has ongoing knowledge of a user's real password. 12 hours is slightly more generous than a strict workday, accommodating users who work across time zones or non-standard hours without being so long that it creates meaningful security risk.
+
+**Alternatives considered:** User sets password on first login via emailed link — rejected for now as it adds infrastructure (email delivery) that isn't warranted at this stage. "Remember me" option extending to 30 days — deferred, not rejected. Could be added later for clients who want it.
