@@ -1,17 +1,18 @@
 'use client';
 
-import { useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
-function LoginForm() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const clientKey = searchParams.get('client') || 'demo';
-
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [clientKey, setClientKey] = useState('demo');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setClientKey(params.get('client') || 'demo');
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,7 +34,7 @@ function LoginForm() {
         return;
       }
 
-      router.push(`/?client=${clientKey}`);
+      window.location.href = `/?client=${clientKey}`;
     } catch {
       setError('Something went wrong. Try again.');
       setLoading(false);
@@ -54,7 +55,6 @@ function LoginForm() {
         maxWidth: '380px',
         padding: '0 24px',
       }}>
-        {/* Wordmark */}
         <div style={{
           fontFamily: 'Fraunces, Georgia, serif',
           fontSize: '20px',
@@ -185,23 +185,5 @@ function LoginForm() {
         </form>
       </div>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'var(--bg)',
-      }}>
-        <p style={{ fontSize: '14px', color: '#9CA3AF' }}>Loading…</p>
-      </div>
-    }>
-      <LoginForm />
-    </Suspense>
   );
 }
