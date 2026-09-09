@@ -26,18 +26,41 @@ export default function Home() {
   const [activeView, setActiveView] = useState('agent');
   const [config, setConfig] = useState<ClientConfig | null>(null);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setError(false);
     setConfig(null);
+    setLoading(true);
     fetch(`/api/client?client=${clientKey}`)
       .then(res => {
         if (!res.ok) throw new Error('Not found');
         return res.json();
       })
-      .then(data => setConfig(data))
-      .catch(() => setError(true));
+      .then(data => {
+        setConfig(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   }, [clientKey]);
+
+  if (loading) {
+    return (
+      <div style={{
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'var(--bg)',
+        fontFamily: 'Inter, system-ui, sans-serif',
+      }}>
+        <p style={{ fontSize: '14px', color: '#9CA3AF', letterSpacing: '0.02em' }}>Loading…</p>
+      </div>
+    );
+  }
 
   if (error) {
     return (
@@ -67,8 +90,8 @@ export default function Home() {
   }
 
   const role: Role = config?.user?.role || 'contributor';
-  const userName = config?.user?.name || '…';
-  const clientName = config?.clientName || '…';
+  const userName = config?.user?.name || '';
+  const clientName = config?.clientName || '';
   const domains = config?.domains || [];
 
   const renderView = () => {
