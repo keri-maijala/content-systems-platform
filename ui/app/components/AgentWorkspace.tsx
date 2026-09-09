@@ -8,10 +8,17 @@ interface Message {
   timestamp: Date;
 }
 
+interface UserContext {
+  name: string;
+  role: 'contributor' | 'domain_owner' | 'content_owner';
+  domains: string[];
+}
+
 interface AgentWorkspaceProps {
   userName: string;
   clientName: string;
   clientKey: string;
+  user: UserContext | null;
 }
 
 const SUGGESTIONS = [
@@ -21,7 +28,7 @@ const SUGGESTIONS = [
   'Check this for inclusive language',
 ];
 
-export default function AgentWorkspace({ userName, clientName, clientKey }: AgentWorkspaceProps) {
+export default function AgentWorkspace({ userName, clientName, clientKey, user }: AgentWorkspaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -46,7 +53,6 @@ export default function AgentWorkspace({ userName, clientName, clientKey }: Agen
     setInput('');
     setLoading(true);
 
-    // Add empty assistant message to stream into
     const assistantMessage: Message = {
       role: 'assistant',
       content: '',
@@ -64,6 +70,7 @@ export default function AgentWorkspace({ userName, clientName, clientKey }: Agen
             content: m.content,
           })),
           clientKey,
+          user,
         }),
       });
 
