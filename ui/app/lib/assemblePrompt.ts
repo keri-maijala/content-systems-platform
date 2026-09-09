@@ -19,7 +19,19 @@ function readDir(dirPath: string): string[] {
     .map(f => fs.readFileSync(path.join(full, f), 'utf-8').trim());
 }
 
-export function assembleSystemPrompt(clientKey: string = 'demo'): string {
+interface UserContext {
+  name: string;
+  role: 'contributor' | 'domain_owner' | 'content_owner';
+  domains: string[];
+}
+
+const ROLE_DESCRIPTIONS: Record<string, string> = {
+  content_owner: 'a content owner with full access across all domains. They configure the system, govern content rules, and use the agent day to day. They can request governance flags and override recommendations.',
+  domain_owner: 'a domain owner with access scoped to their assigned domains. They can request governance flags and override recommendations within their domains.',
+  contributor: 'a contributor — an everyday user who creates and reviews content within established guidelines. They do not have override access.',
+};
+
+export function assembleSystemPrompt(clientKey: string = 'demo', user?: UserContext): string {
   const sections: string[] = [];
 
   // 1. Role and core behavior
@@ -50,7 +62,16 @@ export function assembleSystemPrompt(clientKey: string = 'demo'): string {
     sections.push(`## Domains\nThis client's content domains are: ${domains.join(', ')}. Scope your guidance to these domains when context is provided.`);
   }
 
-  // 3. Base subject prompts
+  // 3. Current user context
+  if (user) {
+    const roleDescription = ROLE_DESCRIPTIONS[user.role] || 'a platform user.';
+    const domainLine = user.domains.length > 0
+      ? ` Their assigned domains are: ${user.domains.join(', ')}.`
+      : '';
+    sections.push(`## Current user\nYou are speaking with ${user.name}, who is ${roleDescription}${domainLine} Tailor your responses to their level of access and ownership.`);
+  }
+
+  // 4. Base subject prompts
   const subjectPrompts = [
     read('base/prompts/plain-language.md'),
     read('base/prompts/accessibility.md'),
@@ -63,19 +84,19 @@ export function assembleSystemPrompt(clientKey: string = 'demo'): string {
     sections.push('## Subject guidance\n\n' + subjectPrompts.join('\n\n---\n\n'));
   }
 
-  // 4. Stage prompts
+  // 5. Stage prompts
   const stagePrompts = readDir('base/prompts/stages');
   if (stagePrompts.length > 0) {
     sections.push('## Journey stage guidance\n\n' + stagePrompts.join('\n\n---\n\n'));
   }
 
-  // 5. Request handling
+  // 6. Request handling
   const requestHandling = read('base/prompts/request-handling.md');
   if (requestHandling) {
     sections.push('## Request handling\n\n' + requestHandling);
   }
 
-  // 6. Voice and tone — client custom or default
+  // 7. Voice and tone — client custom or default
   const vtDoc = voiceAndToneCustomDoc
     ? read(`clients/${clientKey}/${voiceAndToneCustomDoc}`)
     : read('base/subjects/voice-and-tone-default.md');
