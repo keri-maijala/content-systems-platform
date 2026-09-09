@@ -19,7 +19,6 @@ interface ClientConfig {
   clientKey: string;
   clientName: string;
   domains: string[];
-  user: UserContext | null;
 }
 
 function AppShell() {
@@ -28,19 +27,50 @@ function AppShell() {
 
   const [activeView, setActiveView] = useState('agent');
   const [config, setConfig] = useState<ClientConfig | null>(null);
+  const [user, setUser] = useState<UserContext | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setError(false);
     setConfig(null);
+    setUser(null);
     setLoading(true);
-    fetch(`/api/client?client=${clientKey}`)
+
+    // Check session first — redirect to login if none
+    fetch('/api/auth/session')
       .then(res => {
+        if (!res.ok) {
+          window.location.href = `/login?client=${clientKey}`;
+          return null;
+        }
+        return res.json();
+      })
+      .then(session => {
+        if (!session) return;
+
+        // Session must match URL client
+        if (session.clientKey !== clientKey) {
+          window.location.href = `/login?client=${clientKey}`;
+          return;
+        }
+
+        setUser({
+          name: session.name,
+          email: session.email,
+          role: session.role,
+          domains: session.domains || [],
+        });
+
+        return fetch(`/api/client?client=${clientKey}`);
+      })
+      .then(res => {
+        if (!res) return;
         if (!res.ok) throw new Error('Not found');
         return res.json();
       })
       .then(data => {
+        if (!data) return;
         setConfig(data);
         setLoading(false);
       })
@@ -50,6 +80,11 @@ function AppShell() {
       });
   }, [clientKey]);
 
+  async function handleSignOut() {
+    await fetch('/api/auth/session', { method: 'DELETE' });
+    window.location.href = `/login?client=${clientKey}`;
+  }
+
   if (loading) {
     return (
       <div style={{
@@ -57,10 +92,10 @@ function AppShell() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'var(--bg)',
+        backgroundColor: '#F7F6F3',
         fontFamily: 'Inter, system-ui, sans-serif',
       }}>
-        <p style={{ fontSize: '14px', color: '#9CA3AF', letterSpacing: '0.02em' }}>Loading…</p>
+        <p style={{ fontSize: '14px', color: '#9CA3AF' }}>Loading…</p>
       </div>
     );
   }
@@ -73,7 +108,7 @@ function AppShell() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'var(--bg)',
+        backgroundColor: '#F7F6F3',
         fontFamily: 'Inter, system-ui, sans-serif',
       }}>
         <h1 style={{
@@ -92,7 +127,6 @@ function AppShell() {
     );
   }
 
-  const user = config?.user ?? null;
   const role: Role = user?.role || 'contributor';
   const userName = user?.name || '';
   const clientName = config?.clientName || '';
@@ -147,7 +181,7 @@ function AppShell() {
       display: 'flex',
       height: '100vh',
       overflow: 'hidden',
-      backgroundColor: 'var(--bg)',
+      backgroundColor: '#F7F6F3',
     }}>
       <Nav
         role={role}
@@ -155,6 +189,7 @@ function AppShell() {
         activeDomains={domains}
         activeView={activeView}
         onViewChange={setActiveView}
+        onSignOut={handleSignOut}
       />
       <main style={{
         flex: 1,
@@ -176,14 +211,13 @@ export default function Home() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'var(--bg)',
+        backgroundColor: '#F7F6F3',
         fontFamily: 'Inter, system-ui, sans-serif',
       }}>
-        <p style={{ fontSize: '14px', color: '#9CA3AF', letterSpacing: '0.02em' }}>Loading…</p>
+        <p style={{ fontSize: '14px', color: '#9CA3AF' }}>Loading…</p>
       </div>
     }>
       <AppShell />
     </Suspense>
   );
 }
-
