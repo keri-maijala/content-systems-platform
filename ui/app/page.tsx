@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Nav from './components/Nav';
 import AgentWorkspace from './components/AgentWorkspace';
@@ -22,7 +22,7 @@ interface ClientConfig {
   user: UserContext | null;
 }
 
-export default function Home() {
+function AppShell() {
   const searchParams = useSearchParams();
   const clientKey = searchParams.get('client') || 'demo';
 
@@ -165,5 +165,24 @@ export default function Home() {
         {renderView()}
       </main>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div style={{
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'var(--bg)',
+        fontFamily: 'Inter, system-ui, sans-serif',
+      }}>
+        <p style={{ fontSize: '14px', color: '#9CA3AF', letterSpacing: '0.02em' }}>Loading…</p>
+      </div>
+    }>
+      <AppShell />
+    </Suspense>
   );
 }
