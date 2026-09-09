@@ -8,15 +8,18 @@ import PlaceholderView from './components/PlaceholderView';
 
 type Role = 'contributor' | 'domain_owner' | 'content_owner';
 
+interface UserContext {
+  name: string;
+  email: string;
+  role: Role;
+  domains: string[];
+}
+
 interface ClientConfig {
   clientKey: string;
   clientName: string;
   domains: string[];
-  user: {
-    name: string;
-    email: string;
-    role: Role;
-  } | null;
+  user: UserContext | null;
 }
 
 export default function Home() {
@@ -89,8 +92,9 @@ export default function Home() {
     );
   }
 
-  const role: Role = config?.user?.role || 'contributor';
-  const userName = config?.user?.name || '';
+  const user = config?.user ?? null;
+  const role: Role = user?.role || 'contributor';
+  const userName = user?.name || '';
   const clientName = config?.clientName || '';
   const domains = config?.domains || [];
 
@@ -102,6 +106,7 @@ export default function Home() {
             userName={userName}
             clientName={clientName}
             clientKey={clientKey}
+            user={user}
           />
         );
       case 'requests':
