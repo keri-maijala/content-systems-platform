@@ -228,3 +228,35 @@ The configured path ships as part of the client's content system — documented 
 - Client questionnaire — needs a section on content process and review structure
 - Domain model — review ownership likely maps to domain owners
 - Role model — initiation and approval rights connect to the existing three-tier model
+
+---
+
+## Social media post add-on
+
+**Origin:** Session 2026-09-08
+
+**The idea**
+An add-on capability that generates social media posts from existing content — blog posts, product announcements, release notes, or any other source content the client has already written or reviewed through the platform.
+
+**The fuller vision**
+Once a piece of content has been reviewed and approved through the platform, the social media add-on takes it as input and generates platform-appropriate posts — adapting length, tone, and format for each channel (LinkedIn, X/Twitter, Instagram, etc.). The output respects the client's configured voice and tone and stays within their terminology governance rules.
+
+This is not a standalone social media tool — it's an extension of the content system. The assumption is that the source content has already been through the platform's review process, so the social posts start from a solid foundation.
+
+**Potential surfaces**
+- An action available in the agent workspace after content has been reviewed ("Generate social posts from this")
+- A dedicated add-on view in the client portal
+- A separate step in the content creation path, triggered after human review
+
+**Open questions**
+- Which platforms does it generate for — all, or client-configured?
+- Does the client configure platform-specific tone (LinkedIn more formal, X more conversational), or does the agent infer from the base voice and tone?
+- Does the agent generate multiple variants per platform for the client to choose from?
+- Is this part of the base platform or a paid add-on?
+- Does generated social content go through the same review path as other content, or is it treated as draft-only?
+
+**Dependencies**
+- Voice and tone model — social posts must reflect the client's configured voice
+- Terminology governance — platform-specific language rules apply
+- Content creation path — social post generation likely fits after the human review stage
+- Domain model — social content probably belongs to a specific domain (Marketing, most likely)
