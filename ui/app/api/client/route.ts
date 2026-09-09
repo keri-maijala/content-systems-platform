@@ -20,7 +20,5 @@ export async function GET(req: NextRequest) {
     clientKey,
     clientName: config.client?.name || clientKey,
     domains: (config.domains || []).map((d: { name: string }) => d.name),
-    // First content_owner user as the default "logged in" user for now
-    user: config.users?.find((u: { role: string }) => u.role === 'content_owner') || config.users?.[0] || null,
   });
 }
