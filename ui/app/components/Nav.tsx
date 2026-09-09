@@ -10,11 +10,10 @@ interface NavProps {
   activeDomains?: string[];
   activeView: string;
   onViewChange: (view: string) => void;
-  onSignOut: () => void;
 }
 
-export default function Nav({ role, userName, activeDomains = [], activeView, onViewChange, onSignOut }: NavProps) {
-  const [signingOut, setSigningOut] = useState(false);
+export default function Nav({ role, userName, activeDomains = [], activeView, onViewChange }: NavProps) {
+  const [expanded, setExpanded] = useState(false);
 
   const navItems = [
     { id: 'agent', label: 'Agent', roles: ['contributor', 'domain_owner', 'content_owner'] },
@@ -31,11 +30,6 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
     domain_owner: 'Domain owner',
     content_owner: 'Content owner',
   }[role];
-
-  async function handleSignOut() {
-    setSigningOut(true);
-    onSignOut();
-  }
 
   return (
     <nav style={{
@@ -91,7 +85,7 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
           </button>
         ))}
 
-        {/* Domain list */}
+        {/* Domain list for domain owners */}
         {(role === 'domain_owner' || role === 'content_owner') && activeDomains.length > 0 && (
           <div style={{ marginTop: '24px', padding: '0 24px' }}>
             <div style={{
@@ -117,7 +111,7 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
         )}
       </div>
 
-      {/* User identity + sign out */}
+      {/* User identity */}
       <div style={{
         padding: '16px 24px',
         borderTop: '1px solid rgba(255,255,255,0.08)',
@@ -133,28 +127,11 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
         <div style={{
           fontSize: '12px',
           color: 'rgba(255,255,255,0.4)',
-          marginBottom: '12px',
         }}>
           {roleLabel}
         </div>
-        <button
-          onClick={handleSignOut}
-          disabled={signingOut}
-          style={{
-            fontSize: '12px',
-            color: 'rgba(255,255,255,0.35)',
-            background: 'none',
-            border: 'none',
-            padding: '0',
-            cursor: signingOut ? 'not-allowed' : 'pointer',
-            fontFamily: 'Inter, system-ui, sans-serif',
-            letterSpacing: '0',
-            transition: 'color 0.15s ease',
-          }}
-        >
-          {signingOut ? 'Signing out…' : 'Sign out'}
-        </button>
       </div>
     </nav>
   );
 }
+
