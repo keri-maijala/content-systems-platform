@@ -67,7 +67,9 @@ The platform serves two audiences:
 
 /ui/                   # Next.js web application
   app/
-    api/agent/         # Agent engine API route — streaming, Anthropic API
+    api/
+      agent/           # Agent engine API route — streaming, Anthropic API
+      client/          # Client config API route — loads config.json per client key
     components/        # Nav, AgentWorkspace, PlaceholderView
     lib/               # assemblePrompt.ts — dynamic prompt assembly
     globals.css
@@ -127,16 +129,31 @@ A flag is raised only when the user explicitly requests a governance check, or c
 - [x] UI shell — Next.js app with adaptive nav and agent workspace
 - [x] Agent engine — API route wired to Anthropic API with streaming
 - [x] Next.js project scaffolding — package.json, next.config.mjs, tsconfig.json, tailwind, postcss
-- [x] App running locally — confirmed working at localhost:3001
 - [x] Dynamic prompt assembly — assemblePrompt.ts reads from repo files at runtime
 - [x] Demo client config — Acme Co., three domains (Marketing, Product, Legal), four users
-- [x] DECISIONS.md — full decisions log
-- [x] IDEAS.md — ideas log
-- [ ] Client key routing — pass client key from UI, load correct config per user
+- [x] Client key routing — URL param (?client=demo), defaults to demo, one-deploy-per-client confirmed as production model
+- [x] Client config API route — /api/client loads config.json per client key
+- [x] Real data in UI — client name, user name, role, domains loaded from config (not hardcoded)
+- [x] Loading and error states — clean startup sequence, clear error for unknown client keys
+- [x] User context in agent — role and domains passed to system prompt, agent responds differently by role
+- [x] App deployed to Vercel — live at https://content-systems-platform.vercel.app/?client=demo
+- [x] DECISIONS.md — full decisions log, updated in real time during sessions
+- [x] IDEAS.md — ideas log (social media post add-on captured)
+- [ ] Authentication — login screen, credentials per client, forced password reset on first login, 12-hour sessions
 - [ ] Requests, logs, domains, admin views in UI
 - [ ] Product owner view
 - [ ] Digest collector and delivery
 - [ ] First client config (pilot)
+
+---
+
+## Deployment
+
+- **Platform:** Vercel (Hobby)
+- **Live URL:** https://content-systems-platform.vercel.app/?client=demo
+- **Deploy model:** GitHub push → Vercel auto-deploys within ~1 minute
+- **Environment variables:** ANTHROPIC_API_KEY set in Vercel dashboard
+- **Production model:** One Vercel deployment per client, each with their own environment variables (client key, API key, credentials)
 
 ---
 
@@ -159,6 +176,12 @@ See DECISIONS.md for full context and reasoning.
 | Tech stack | Next.js, React, Anthropic API, streaming responses |
 | Dynamic prompt assembly | assemblePrompt.ts assembles system prompt from repo files at runtime |
 | Demo client | Acme Co. — used to verify full config-to-prompt chain |
+| Client key routing | URL param now (?client=), env var per deployment in production |
+| One deploy per client | Confirmed as production architecture — required for per-client API keys and credentials |
+| Authentication model | Username and password, credentials in deployment environment not repo, 12-hour sessions |
+| Client API keys | Each client provides their own Anthropic API key, stored as env var in their deployment |
+| Non-engineer framing | Every change explained with plain-language "so what" — standing agreement for all sessions |
+| Decision logging | Real-time during sessions, not reconstructed at close |
 
 ---
 
@@ -168,3 +191,27 @@ See DECISIONS.md for full context and reasoning.
 - UI branding — neutral always, or light per-client customization?
 - What triggers a post-handoff new engagement?
 - Stakeholder relationship types beyond "informed"
+
+---
+
+## Next session: start here
+
+**Pick up with: authentication.**
+
+What's decided:
+- Username and password credentials
+- Credentials stored as environment variables in Vercel (not in repo, not in config file)
+- Passwords hashed — never plain text
+- Keri sets initial password during client setup
+- User must reset password on first login
+- Sessions last 12 hours
+- Login endpoint must be rate-limited
+- Credentials only over HTTPS (Vercel handles this automatically)
+
+What to build:
+1. Password hashing utility — script Keri runs during setup to generate a hashed password
+2. Login API route — /api/auth/login — validates credentials, issues session token
+3. Session API route — /api/auth/session — validates session token, returns user
+4. Login screen — email, password, submit
+5. Forced reset screen — shown on first login
+6. Auth guard in page.tsx — redirect to login if no valid session
