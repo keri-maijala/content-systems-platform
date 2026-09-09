@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Nav from './components/Nav';
 import AgentWorkspace from './components/AgentWorkspace';
 import PlaceholderView from './components/PlaceholderView';
@@ -19,59 +19,28 @@ interface ClientConfig {
   clientKey: string;
   clientName: string;
   domains: string[];
+  user: UserContext | null;
 }
 
 function AppShell() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const clientKey = searchParams.get('client') || 'demo';
 
   const [activeView, setActiveView] = useState('agent');
   const [config, setConfig] = useState<ClientConfig | null>(null);
-  const [user, setUser] = useState<UserContext | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setError(false);
     setConfig(null);
-    setUser(null);
     setLoading(true);
-
-    // Check session first
-    fetch('/api/auth/session')
+    fetch(`/api/client?client=${clientKey}`)
       .then(res => {
-        if (!res.ok) {
-          router.replace(`/login?client=${clientKey}`);
-          return null;
-        }
-        return res.json();
-      })
-      .then(session => {
-        if (!session) return;
-
-        // Session client must match URL client
-        if (session.clientKey !== clientKey) {
-          router.replace(`/login?client=${clientKey}`);
-          return;
-        }
-
-        setUser({
-          name: session.name,
-          email: session.email,
-          role: session.role,
-          domains: session.domains || [],
-        });
-
-        return fetch(`/api/client?client=${clientKey}`);
-      })
-      .then(res => {
-        if (!res) return;
         if (!res.ok) throw new Error('Not found');
         return res.json();
       })
       .then(data => {
-        if (!data) return;
         setConfig(data);
         setLoading(false);
       })
@@ -79,12 +48,7 @@ function AppShell() {
         setError(true);
         setLoading(false);
       });
-  }, [clientKey, router]);
-
-  async function handleSignOut() {
-    await fetch('/api/auth/session', { method: 'DELETE' });
-    router.push(`/login?client=${clientKey}`);
-  }
+  }, [clientKey]);
 
   if (loading) {
     return (
@@ -128,6 +92,7 @@ function AppShell() {
     );
   }
 
+  const user = config?.user ?? null;
   const role: Role = user?.role || 'contributor';
   const userName = user?.name || '';
   const clientName = config?.clientName || '';
@@ -187,10 +152,9 @@ function AppShell() {
       <Nav
         role={role}
         userName={userName}
-        activeDomains={user?.domains || []}
+        activeDomains={domains}
         activeView={activeView}
         onViewChange={setActiveView}
-        onSignOut={handleSignOut}
       />
       <main style={{
         flex: 1,
@@ -222,3 +186,4 @@ export default function Home() {
     </Suspense>
   );
 }
+
