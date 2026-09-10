@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SignJWT, jwtVerify } from 'jose';
+import { jwtVerify } from 'jose';
 import fs from 'fs';
 import path from 'path';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.AUTH_JWT_SECRET || '');
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+const REPO = 'keri-maijala/content-systems-platform';
 
 async function getSession(req: NextRequest) {
   const token = req.cookies.get('session')?.value;
@@ -16,15 +18,34 @@ async function getSession(req: NextRequest) {
   }
 }
 
-function loadRequests(clientKey: string) {
-  const filePath = path.join(process.cwd(), '..', 'clients', clientKey, 'logs', 'requests.json');
-  const raw = fs.readFileSync(filePath, 'utf-8');
-  return JSON.parse(raw);
+async function loadRequestsFromGitHub(clientKey: string) {
+  const apiUrl = `https://api.github.com/repos/${REPO}/contents/clients/${clientKey}/logs/requests.json`;
+  const res = await fetch(apiUrl, {
+    headers: { Authorization: `token ${GITHUB_TOKEN}` },
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error('Could not load requests from GitHub');
+  const file = await res.json();
+  const content = JSON.parse(Buffer.from(file.content, 'base64').toString('utf-8'));
+  return { data: content, sha: file.sha };
 }
 
-function saveRequests(clientKey: string, data: any) {
-  const filePath = path.join(process.cwd(), '..', 'clients', clientKey, 'logs', 'requests.json');
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+async function saveRequestsToGitHub(clientKey: string, data: any, sha: string) {
+  const apiUrl = `https://api.github.com/repos/${REPO}/contents/clients/${clientKey}/logs/requests.json`;
+  const content = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
+  const res = await fetch(apiUrl, {
+    method: 'PUT',
+    headers: {
+      Authorization: `token ${GITHUB_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      message: `Update request status`,
+      content,
+      sha,
+    }),
+  });
+  if (!res.ok) throw new Error('Could not save requests to GitHub');
 }
 
 function filterForUser(requests: any[], session: any) {
@@ -33,7 +54,6 @@ function filterForUser(requests: any[], session: any) {
   const domains = (session.domains as string[]) || [];
 
   if (role === 'content_owner') return requests;
-
   if (role === 'domain_owner') {
     return requests.filter(r =>
       domains.includes(r.domain) ||
@@ -41,14 +61,11 @@ function filterForUser(requests: any[], session: any) {
       r.originator === email
     );
   }
-
-  // contributor
   return requests.filter(r =>
     r.originator === email || r.watchers?.includes(email)
   );
 }
 
-// GET — list requests
 export async function GET(req: NextRequest) {
   const session = await getSession(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -56,7 +73,7 @@ export async function GET(req: NextRequest) {
   const clientKey = session.clientKey as string;
 
   try {
-    const data = loadRequests(clientKey);
+    const { data } = await loadRequestsFromGitHub(clientKey);
     const filtered = filterForUser(data.requests, session);
     return NextResponse.json({ requests: filtered });
   } catch {
@@ -64,7 +81,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// PATCH — resolve a request
 export async function PATCH(req: NextRequest) {
   const session = await getSession(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -78,12 +94,11 @@ export async function PATCH(req: NextRequest) {
   const clientKey = session.clientKey as string;
 
   try {
-    const data = loadRequests(clientKey);
+    const { data, sha } = await loadRequestsFromGitHub(clientKey);
     const request = data.requests.find((r: any) => r.id === requestId);
 
     if (!request) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-    // Domain owners can only resolve requests in their domains
     if (role === 'domain_owner') {
       const domains = (session.domains as string[]) || [];
       if (!domains.includes(request.domain)) {
@@ -97,9 +112,9 @@ export async function PATCH(req: NextRequest) {
       request.resolvedAt = new Date().toISOString();
     }
 
-    saveRequests(clientKey, data);
+    await saveRequestsToGitHub(clientKey, data, sha);
     return NextResponse.json({ ok: true, request });
-  } catch {
-    return NextResponse.json({ error: 'Could not update request' }, { status: 500 });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message || 'Could not update request' }, { status: 500 });
   }
 }
