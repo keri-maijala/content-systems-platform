@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import Nav from '../components/Nav';
 import AgentWorkspace from '../components/AgentWorkspace';
+import RequestsView from '../components/RequestsView';
 import PlaceholderView from '../components/PlaceholderView';
 
 type Role = 'contributor' | 'domain_owner' | 'content_owner';
@@ -127,6 +128,7 @@ function AppShell() {
 
   const role: Role = user?.role || 'contributor';
   const userName = user?.name || '';
+  const userEmail = user?.email || '';
   const clientName = config?.clientName || '';
   const domains = config?.domains || [];
 
@@ -143,10 +145,7 @@ function AppShell() {
         );
       case 'requests':
         return (
-          <PlaceholderView
-            title="Requests"
-            description="Open requests from your domains appear here — governance conflicts, direct content requests, and items pending resolution. This view is coming in a future build."
-          />
+          <RequestsView role={role} userEmail={userEmail} />
         );
       case 'logs':
         return (
