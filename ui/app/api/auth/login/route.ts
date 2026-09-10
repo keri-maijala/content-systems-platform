@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 import { SignJWT } from 'jose';
 import fs from 'fs';
 import path from 'path';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.AUTH_JWT_SECRET || '');
-
-function emailToEnvKey(email: string): string {
-  return 'AUTH_USER_' + email.replace('@', '_AT_').replace(/\./g, '_DOT_');
-}
 
 export async function POST(req: NextRequest) {
   const { email, password, clientKey } = await req.json();
@@ -17,31 +12,48 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
   }
 
-  // Diagnostic: check env key and config path
-  const envKey = emailToEnvKey(email);
-  const configPath = path.join(process.cwd(), '..', 'clients', clientKey, 'config.json');
-  const hash = process.env[envKey];
-
-  const diag = {
-    envKey,
-    configPath,
-    hashExists: !!hash,
-    hashPrefix: hash ? hash.substring(0, 10) : null,
-    cwd: process.cwd(),
-    allAuthKeys: Object.keys(process.env).filter(k => k.startsWith('AUTH')),
-  };
-
-  // Try loading config
-  let configExists = false;
-  let userFound = false;
-  try {
-    const raw = fs.readFileSync(configPath, 'utf-8');
-    const clientConfig = JSON.parse(raw);
-    configExists = true;
-    userFound = !!clientConfig.users.find((u: any) => u.email === email);
-  } catch (e: any) {
-    return NextResponse.json({ error: 'Config load failed', detail: e.message, diag }, { status: 500 });
+  // Check demo password
+  const demoPassword = process.env.AUTH_DEMO_PASSWORD;
+  if (!demoPassword || password !== demoPassword) {
+    return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   }
 
-  return NextResponse.json({ diag, configExists, userFound }, { status: 200 });
+  // Load client config from filesystem
+  let clientConfig: any;
+  try {
+    const configPath = path.join(process.cwd(), '..', 'clients', clientKey, 'config.json');
+    const raw = fs.readFileSync(configPath, 'utf-8');
+    clientConfig = JSON.parse(raw);
+  } catch {
+    return NextResponse.json({ error: 'Unknown client' }, { status: 400 });
+  }
+
+  // Find user
+  const user = clientConfig.users.find((u: any) => u.email === email);
+  if (!user) {
+    return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+  }
+
+  // Issue JWT
+  const token = await new SignJWT({
+    sub: user.email,
+    name: user.name,
+    role: user.role,
+    domains: user.domains,
+    clientKey,
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('8h')
+    .sign(JWT_SECRET);
+
+  const response = NextResponse.json({ ok: true, name: user.name, role: user.role });
+  response.cookies.set('session', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 8,
+    path: '/',
+  });
+
+  return response;
 }
