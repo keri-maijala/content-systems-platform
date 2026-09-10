@@ -2,14 +2,14 @@
 
 ## Start here — next session
 
-Authentication is fully confirmed working as of 2026-09-10.
+Authentication and client key routing are fully confirmed working as of 2026-09-10.
 
-**Test results:**
-1. ✓ Unauthenticated visit to `/?client=demo` → redirects to login
-2. ✓ Login with valid credentials → lands in app
-3. ✓ Sign out → returns to login page
+**New URLs (path-based routing):**
+- Login: `/demo/login`
+- App: `/demo`
+- Root (`/`) redirects to `/demo` for now — update when second client is added
 
-**Next task: client key routing** — each client gets their own path or subdomain. See IDEAS.md and the horizon list below.
+**Next task: remaining UI views** — Requests, Logs, Domains, Admin are currently placeholders. Pick one to build out, or decide on digest delivery method first.
 
 ---
 
@@ -32,16 +32,15 @@ Authentication is fully confirmed working as of 2026-09-10.
 ### Authentication (fully confirmed 2026-09-10)
 - `ui/app/api/auth/login/route.ts` — validates email against client config, checks password against `AUTH_DEMO_PASSWORD` env var, issues 8-hour JWT session cookie
 - `ui/app/api/auth/session/route.ts` — GET validates session token; DELETE clears cookie (sign out)
-- `ui/app/login/page.tsx` — login screen
-- `ui/app/page.tsx` — auth guard; redirects to login if no valid session
-- `ui/app/components/Nav.tsx` — sign out button
+- `ui/app/[clientKey]/login/page.tsx` — login screen
+- `ui/app/[clientKey]/page.tsx` — main app with auth guard
+- `ui/app/page.tsx` — root redirect to `/demo`
 
-### Authentication architecture decisions
-- Demo password stored as plaintext in `AUTH_DEMO_PASSWORD` Vercel env var (demo only — production will use bcrypt hashes per user)
-- User list loaded from `clients/{clientKey}/config.json` at runtime via `fs.readFileSync`
-- JWT secret: `AUTH_JWT_SECRET` (set in -2l2p project only — see known issues)
-- Session duration: 8 hours
-- `platform/auth/hash-password.mjs` utility exists for future per-user bcrypt setup
+### Client key routing (fully confirmed 2026-09-10)
+- Path-based routing: `/[clientKey]` and `/[clientKey]/login`
+- Client key read from URL path via `useParams()`
+- Old query param URLs (`?client=demo`) no longer used
+- Root URL redirects to `/demo` as interim measure
 
 ---
 
@@ -53,14 +52,13 @@ Authentication is fully confirmed working as of 2026-09-10.
 - **Root directory:** `ui/`
 - **Framework:** Next.js 14.2.29
 
-### Environment variables — main project (content-systems-platform)
+### Environment variables — main project
 - `ANTHROPIC_API_KEY` — set, working
 - `AUTH_JWT_SECRET` — set, working
-- `AUTH_DEMO_PASSWORD` — set 2026-09-10, working
+- `AUTH_DEMO_PASSWORD` — set, working
 
-### Environment variables — secondary project (content-systems-platform-2l2p)
-- Has all the original bcrypt-based `AUTH_USER_` vars and `AUTH_JWT_SECRET`
-- Not the active deployment — ignore for now
+### Secondary Vercel project (content-systems-platform-2l2p)
+- Not active — can be deleted when convenient
 
 ### Demo credentials
 - Any user in `clients/demo/config.json` + the `AUTH_DEMO_PASSWORD` value set in Vercel
@@ -70,16 +68,19 @@ Authentication is fully confirmed working as of 2026-09-10.
 
 ## Known issues
 
-- Two Vercel projects exist (`content-systems-platform` and `content-systems-platform-2l2p`) — only the main one is active. The -2l2p project can be deleted once we are confident we don't need to reference it.
-- CSS variables (`var(--navy)` etc.) cause hydration failures in statically rendered pages. Replaced with direct hex values in login page and Nav as workaround.
+- Old `ui/app/login/page.tsx` still exists in repo — unused, should be deleted
+- Root redirect hardcoded to `/demo` — update when second client is added
+- CSS variables (`var(--navy)` etc.) cause hydration failures in statically rendered pages. Replaced with direct hex values as workaround.
 - Branch divergence: if commits are made both from Claude and locally in the same session, pull before pushing locally.
+- Two Vercel projects exist — only main one is active
 
 ---
 
 ## On the horizon
 
-1. Client key routing — each client gets their own path or subdomain
+1. Delete old `ui/app/login/page.tsx` (cleanup)
 2. Remaining UI views: Requests, Logs, Domains, Admin
 3. Digest delivery method decision
 4. Setup and discovery process implementation
 5. Replace demo plaintext password with per-user bcrypt hashes before any real client onboarding
+6. Update root redirect when second client is added
