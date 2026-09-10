@@ -22,10 +22,7 @@ async function loadRequestsFromGitHub(clientKey: string) {
     headers: { Authorization: `token ${GITHUB_TOKEN}` },
     cache: 'no-store',
   });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`GitHub ${res.status}: ${text}`);
-  }
+  if (!res.ok) throw new Error(`GitHub ${res.status}`);
   const file = await res.json();
   const content = JSON.parse(Buffer.from(file.content, 'base64').toString('utf-8'));
   return { data: content, sha: file.sha };
@@ -42,10 +39,7 @@ async function saveRequestsToGitHub(clientKey: string, data: any, sha: string) {
     },
     body: JSON.stringify({ message: 'Update request status', content, sha }),
   });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`GitHub write ${res.status}: ${text}`);
-  }
+  if (!res.ok) throw new Error(`GitHub write ${res.status}`);
 }
 
 function filterForUser(requests: any[], session: any) {
@@ -71,14 +65,13 @@ export async function GET(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const clientKey = session.clientKey as string;
-  const tokenExists = !!GITHUB_TOKEN;
 
   try {
     const { data } = await loadRequestsFromGitHub(clientKey);
     const filtered = filterForUser(data.requests, session);
     return NextResponse.json({ requests: filtered });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message, tokenExists, clientKey }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Could not load requests' }, { status: 500 });
   }
 }
 
@@ -114,6 +107,6 @@ export async function PATCH(req: NextRequest) {
     await saveRequestsToGitHub(clientKey, data, sha);
     return NextResponse.json({ ok: true, request });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: 'Could not update request' }, { status: 500 });
   }
 }
