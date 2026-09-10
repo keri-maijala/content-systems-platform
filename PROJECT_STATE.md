@@ -1,217 +1,94 @@
-# Content Systems Platform — Project State
+# Project State
 
-## What this is
+## Start here — next session
 
-A hosted, multi-client content design platform. Each client accesses an isolated instance of a content design agent — configured during a consulting engagement, then fully independent. Clients interact through a web UI and never see the underlying infrastructure.
+Authentication is built and partially working. One issue remains unresolved at end of session:
 
-The platform serves two audiences:
+**The login page is being rendered as a static page by Next.js**, which means React doesn't attach interactivity (form handlers don't fire). The last commit adds `export const dynamic = 'force-dynamic'` to the login page — this should fix it but was not yet confirmed before wrapping up.
 
-- **Clients** — content teams and contributors using the agent day-to-day to write, review, and govern content
-- **Keri** — configuring new client instances during setup, maintaining the platform layer, product owner
+**First thing next session:** Test the login page. Go to `https://content-systems-platform.vercel.app/login?client=demo` and try signing in with `alex@acme.com`. If it works, move on. If not, the issue is Next.js static rendering — investigate why `force-dynamic` didn't take effect.
 
----
+**Test checklist for auth:**
+1. Unauthenticated visit to `/?client=demo` → redirects to login
+2. Login with valid credentials → lands in app
+3. Login with wrong password → shows error message
+4. Sign out button in nav → returns to login
+5. Session persists on page refresh
 
-## Architecture overview
-
-### Three layers
-
-**Platform layer** (infrastructure, invisible to clients)
-- Agent engine — reasoning behavior, prompt assembly, Anthropic API connection
-- Setup tooling — configuration generator for new clients
-- Request log collector — aggregates in-session requests into running log files per client
-- Daily digest delivery — sends the request log to designated client owners on a 24-hour cycle
-
-**Config layer** (built during discovery, sealed after handoff)
-- Client key to sealed config directory
-- Base subjects — all five mandatory, active for every client
-- Domains — client-specific content areas with assigned owners and routing
-- Style guides and voice/tone docs — client-specific .md files
-- Role and permissions model — content owner, domain owner, contributor
-- Routing table — request type to log to owner, configured per domain
-
-**Client layer** (what clients see and use)
-- Agent UI — loaded by client key, adaptive by role
-- Content scoped entirely to their config directory
-- Request flow — inline, triggered by use or by governance flag
-- Daily digest — delivered to designated owners
+Once auth is confirmed working, move to **client key routing** (next item on the build list).
 
 ---
 
-## Repo structure
+## What's built
 
-```
-/platform/
-  agent/
-  setup/               # Discovery process, meeting guide, questionnaire
-  digest/
-  portals.md           # Portal definitions
+### Platform architecture
+- Base subject library: five subjects committed to `base/subjects/`
+- Ten tone stage prompts committed to `base/stages/`
+- Demo client config at `clients/demo/config.json` — Acme Co., three domains, four users
+- Dynamic prompt assembly at `ui/app/lib/assemblePrompt.ts`
+- Full prompt assembly chain verified end-to-end
 
-/clients/
-  .template/
-    config.json        # Client config template — domain-based role model
-  demo/
-    config.json        # Demo client — Acme Co., three domains, four users
-  [client-key]/
-    config.json
-    guides/
-    governance/
-    logs/
-      informational.md
-      requests.md
-      overrides.md
+### UI
+- Next.js/React shell with visual identity: deep navy left rail (#1A1A2E), Fraunces serif headings, Inter body, warm off-white (#F7F6F3)
+- Agent workspace with streaming message thread, empty state, prompt suggestions, auto-growing textarea
+- Nav with role-based visibility, domain list, user identity
+- Placeholder views for Requests, Logs, Domains, Admin
+- Agent wired to Anthropic API and working
 
-/base/
-  subjects/            # Five base subjects with scope statements + default voice and tone
-  prompts/             # Subject prompts, stage prompts, request handling, setup
-    stages/
+### Authentication (built today — partially confirmed)
+- `platform/auth/hash-password.mjs` — utility for generating bcrypt password hashes during client setup
+- `ui/app/api/auth/login/route.ts` — validates credentials against env vars, issues 12-hour JWT session cookie; includes rate limiting (5 attempts per 15 minutes) and email enumeration protection
+- `ui/app/api/auth/session/route.ts` — GET validates session token; DELETE clears cookie (sign out)
+- `ui/app/login/page.tsx` — login screen
+- `ui/app/page.tsx` — auth guard added; redirects to login if no valid session
+- `ui/app/components/Nav.tsx` — sign out button added
 
-/ui/                   # Next.js web application
-  app/
-    api/
-      agent/           # Agent engine API route — streaming, Anthropic API
-      client/          # Client config API route — loads config.json per client key
-    components/        # Nav, AgentWorkspace, PlaceholderView
-    lib/               # assemblePrompt.ts — dynamic prompt assembly
-    globals.css
-    layout.tsx
-    page.tsx
-  package.json
-  next.config.mjs
-  tsconfig.json
-  tailwind.config.ts
-  postcss.config.mjs
-
-IDEAS.md
-DECISIONS.md
-```
-
----
-
-## Role model
-
-| Role | Override governance | View logs | Resolve requests | Configure |
-|---|---|---|---|---|
-| Content owner / admin | Yes — all domains | Yes — all domains | Yes | Yes |
-| Domain owner | Yes — their domain only | Yes — their domain only | Yes — their domain | No |
-| Contributor | No | No | No | No |
-
----
-
-## Portal definitions
-
-**Client portal** — single adaptive UI for all three roles. Interface expands automatically when permissions change.
-
-**Product owner view** — Keri's privileged layer. Cross-client visibility, questionnaire inbox, setup workspace, platform settings. Keri can load any client instance and see exactly what they see.
-
----
-
-## Governance flag model
-
-A flag is raised only when the user explicitly requests a governance check, or continues pushing against a recommendation within a session. Not raised by default. Framing is conversational and observational.
-
----
-
-## Current state
-
-- [x] Architecture documented
-- [x] Repo structure created
-- [x] Base subject library — five mandatory subjects with scope statements
-- [x] Default voice and tone document
-- [x] Base subject prompts — one per subject
-- [x] Stage prompts — one per journey stage
-- [x] Request handling prompts
-- [x] Setup prompts — client-facing and Keri-facing
-- [x] Discovery meeting guide
-- [x] Client questionnaire
-- [x] Discovery process — 10 steps
-- [x] Config template — domain-based role model
-- [x] Portal definitions
-- [x] UI shell — Next.js app with adaptive nav and agent workspace
-- [x] Agent engine — API route wired to Anthropic API with streaming
-- [x] Next.js project scaffolding — package.json, next.config.mjs, tsconfig.json, tailwind, postcss
-- [x] Dynamic prompt assembly — assemblePrompt.ts reads from repo files at runtime
-- [x] Demo client config — Acme Co., three domains (Marketing, Product, Legal), four users
-- [x] Client key routing — URL param (?client=demo), defaults to demo, one-deploy-per-client confirmed as production model
-- [x] Client config API route — /api/client loads config.json per client key
-- [x] Real data in UI — client name, user name, role, domains loaded from config (not hardcoded)
-- [x] Loading and error states — clean startup sequence, clear error for unknown client keys
-- [x] User context in agent — role and domains passed to system prompt, agent responds differently by role
-- [x] App deployed to Vercel — live at https://content-systems-platform.vercel.app/?client=demo
-- [x] DECISIONS.md — full decisions log, updated in real time during sessions
-- [x] IDEAS.md — ideas log (social media post add-on captured)
-- [ ] Authentication — login screen, credentials per client, forced password reset on first login, 12-hour sessions
-- [ ] Requests, logs, domains, admin views in UI
-- [ ] Product owner view
-- [ ] Digest collector and delivery
-- [ ] First client config (pilot)
+### Authentication architecture decisions (made today)
+- Credentials stored as bcrypt hashes in Vercel environment variables (not in repo)
+- Env var naming convention: `AUTH_USER_<email with @ → _AT_ and . → _DOT_>`
+- JWT secret: `AUTH_JWT_SECRET`
+- No forced password reset — strong random passwords generated at setup and delivered securely
+- Session duration: 12 hours
+- Forced reset dropped from scope — requires database layer to implement properly
 
 ---
 
 ## Deployment
 
-- **Platform:** Vercel (Hobby)
-- **Live URL:** https://content-systems-platform.vercel.app/?client=demo
-- **Deploy model:** GitHub push → Vercel auto-deploys within ~1 minute
-- **Environment variables:** ANTHROPIC_API_KEY set in Vercel dashboard
-- **Production model:** One Vercel deployment per client, each with their own environment variables (client key, API key, credentials)
+- **Live URL:** `https://content-systems-platform.vercel.app`
+- **Repo:** `github.com/keri-maijala/content-systems-platform`
+- **Hosting:** Vercel — auto-deploys on push to `main`
+- **Root directory:** `ui/`
+- **Framework:** Next.js 14.2.29
+
+### Environment variables set in Vercel
+- `ANTHROPIC_API_KEY` — set previously, working
+- `AUTH_JWT_SECRET` — set today
+- `AUTH_USER_alex_AT_acme_DOT_com` — set today
+- `AUTH_USER_jordan_AT_acme_DOT_com` — set today
+- `AUTH_USER_sam_AT_acme_DOT_com` — set today
+- `AUTH_USER_taylor_AT_acme_DOT_com` — set today
+
+### Demo credentials (for testing only — not for client use)
+- alex@acme.com — `9eI3q&rdsESyCFcy`
+- jordan@acme.com — `XJnRGp#KO3h0^*e5`
+- sam@acme.com — `0qhUXv75m&aHaiIk`
+- taylor@acme.com — `XIJ9tISJun&75ary`
 
 ---
 
-## Key decisions
+## Known issues
 
-See DECISIONS.md for full context and reasoning.
-
-| Decision | Detail |
-|---|---|
-| Five base subjects, all mandatory | Plain language, accessibility, inclusive language, terminology governance, voice and tone |
-| Voice and tone model | Keri-defined default, replaced entirely by client customization |
-| Agent response pattern | Suggestion first, reasoning second |
-| Intent signal model | No signal: confirm. Weak: note assumption. Strong: proceed. |
-| Governance flag model | Triggered by explicit request or persistence only |
-| Three-tier role model | Content owner, domain owner, contributor |
-| Domain-based structure | Central organizing unit, defined during discovery |
-| Three log streams | Informational, actionable requests, overrides |
-| Two portals | Client portal and product owner view |
-| Questionnaire flow | Client submits to agent, agent confirms with client, Keri gets internal report |
-| Tech stack | Next.js, React, Anthropic API, streaming responses |
-| Dynamic prompt assembly | assemblePrompt.ts assembles system prompt from repo files at runtime |
-| Demo client | Acme Co. — used to verify full config-to-prompt chain |
-| Client key routing | URL param now (?client=), env var per deployment in production |
-| One deploy per client | Confirmed as production architecture — required for per-client API keys and credentials |
-| Authentication model | Username and password, credentials in deployment environment not repo, 12-hour sessions |
-| Client API keys | Each client provides their own Anthropic API key, stored as env var in their deployment |
-| Non-engineer framing | Every change explained with plain-language "so what" — standing agreement for all sessions |
-| Decision logging | Real-time during sessions, not reconstructed at close |
+- Login page static rendering: Next.js 14 treats client components as static unless forced otherwise. Fixed with `export const dynamic = 'force-dynamic'` — not yet confirmed working.
+- CSS variables (`var(--navy)` etc.) cause hydration failures when used in pages that Next.js tries to statically render. Replaced with direct hex values in login page and Nav as workaround. Main app still uses CSS vars — monitor for issues.
+- Branch divergence: if commits are made both from Claude and locally in the same session, pull before pushing locally.
 
 ---
 
-## Open questions
+## On the horizon
 
-- Daily digest delivery method — email, Slack, or other (blocking digest build)
-- UI branding — neutral always, or light per-client customization?
-- What triggers a post-handoff new engagement?
-- Stakeholder relationship types beyond "informed"
-
----
-
-## Next session: start here
-
-**Pick up with: authentication.**
-
-What's decided:
-- Username and password credentials
-- Credentials stored as environment variables in Vercel (not in repo, not in config file)
-- Passwords hashed — never plain text
-- Keri sets initial password during client setup
-- User must reset password on first login
-- Sessions last 12 hours
-- Login endpoint must be rate-limited
-- Credentials only over HTTPS (Vercel handles this automatically)
-
-What to build:
-1. Password hashing utility — script Keri runs during setup to generate a hashed password
-2. Login API route — /api/auth/login — validates credentials, issues session token
-3. Session API route — /api/auth/session — validates session token, returns user
-4. Login screen — email, password, submit
-5. Forced reset screen — shown on first login
-6. Auth guard in page.tsx — redirect to login if no valid session
+1. Confirm auth end-to-end (next session first task)
+2. Client key routing — each client gets their own subdomain or path
+3. Remaining UI views: Requests, Logs, Domains, Admin
+4. Digest delivery method decision
+5. Setup and discovery process implementation
