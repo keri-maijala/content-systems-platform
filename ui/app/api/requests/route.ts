@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
-import fs from 'fs';
-import path from 'path';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.AUTH_JWT_SECRET || '');
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
@@ -24,7 +22,10 @@ async function loadRequestsFromGitHub(clientKey: string) {
     headers: { Authorization: `token ${GITHUB_TOKEN}` },
     cache: 'no-store',
   });
-  if (!res.ok) throw new Error('Could not load requests from GitHub');
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`GitHub ${res.status}: ${text}`);
+  }
   const file = await res.json();
   const content = JSON.parse(Buffer.from(file.content, 'base64').toString('utf-8'));
   return { data: content, sha: file.sha };
@@ -39,13 +40,12 @@ async function saveRequestsToGitHub(clientKey: string, data: any, sha: string) {
       Authorization: `token ${GITHUB_TOKEN}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      message: `Update request status`,
-      content,
-      sha,
-    }),
+    body: JSON.stringify({ message: 'Update request status', content, sha }),
   });
-  if (!res.ok) throw new Error('Could not save requests to GitHub');
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`GitHub write ${res.status}: ${text}`);
+  }
 }
 
 function filterForUser(requests: any[], session: any) {
@@ -71,13 +71,14 @@ export async function GET(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const clientKey = session.clientKey as string;
+  const tokenExists = !!GITHUB_TOKEN;
 
   try {
     const { data } = await loadRequestsFromGitHub(clientKey);
     const filtered = filterForUser(data.requests, session);
     return NextResponse.json({ requests: filtered });
-  } catch {
-    return NextResponse.json({ error: 'Could not load requests' }, { status: 500 });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message, tokenExists, clientKey }, { status: 500 });
   }
 }
 
@@ -108,13 +109,11 @@ export async function PATCH(req: NextRequest) {
 
     request.status = status;
     request.updatedAt = new Date().toISOString();
-    if (status === 'resolved') {
-      request.resolvedAt = new Date().toISOString();
-    }
+    if (status === 'resolved') request.resolvedAt = new Date().toISOString();
 
     await saveRequestsToGitHub(clientKey, data, sha);
     return NextResponse.json({ ok: true, request });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message || 'Could not update request' }, { status: 500 });
+    return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
