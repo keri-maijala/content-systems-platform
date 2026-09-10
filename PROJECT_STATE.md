@@ -2,14 +2,9 @@
 
 ## Start here — next session
 
-Authentication and client key routing are fully confirmed working as of 2026-09-10.
+Authentication, client key routing, and the Requests view are fully confirmed working as of 2026-09-10.
 
-**New URLs (path-based routing):**
-- Login: `/demo/login`
-- App: `/demo`
-- Root (`/`) redirects to `/demo` for now — update when second client is added
-
-**Next task: remaining UI views** — Requests, Logs, Domains, Admin are currently placeholders. Pick one to build out, or decide on digest delivery method first.
+**Next task: Logs view** — or decide to skip straight to Domains or Admin. See horizon list below.
 
 ---
 
@@ -26,8 +21,8 @@ Authentication and client key routing are fully confirmed working as of 2026-09-
 - Next.js/React shell with visual identity: deep navy left rail (#1A1A2E), Fraunces serif headings, Inter body, warm off-white (#F7F6F3)
 - Agent workspace with streaming message thread, empty state, prompt suggestions, auto-growing textarea
 - Nav with role-based visibility, domain list, user identity
-- Placeholder views for Requests, Logs, Domains, Admin
-- Agent wired to Anthropic API and working
+- Requests view — fully working (see below)
+- Placeholder views for Logs, Domains, Admin
 
 ### Authentication (fully confirmed 2026-09-10)
 - `ui/app/api/auth/login/route.ts` — validates email against client config, checks password against `AUTH_DEMO_PASSWORD` env var, issues 8-hour JWT session cookie
@@ -39,8 +34,16 @@ Authentication and client key routing are fully confirmed working as of 2026-09-
 ### Client key routing (fully confirmed 2026-09-10)
 - Path-based routing: `/[clientKey]` and `/[clientKey]/login`
 - Client key read from URL path via `useParams()`
-- Old query param URLs (`?client=demo`) no longer used
 - Root URL redirects to `/demo` as interim measure
+
+### Requests view (fully confirmed 2026-09-10)
+- `ui/app/components/RequestsView.tsx` — list with filter tabs, expand/collapse, status badges, type tags
+- `ui/app/api/requests/route.ts` — GET (filtered by role) and PATCH (resolve/update status)
+- `clients/demo/logs/requests.json` — request data stored as JSON in repo, read/written via GitHub API
+- Visibility: content_owner sees all; domain_owner sees their domains + flagged; contributor sees own only
+- Resolution requires manual owner action (governance principle)
+- "Mark in progress" and "Mark resolved" buttons working
+- Key architectural decision: GitHub API for read/write (Vercel filesystem is read-only)
 
 ---
 
@@ -56,6 +59,7 @@ Authentication and client key routing are fully confirmed working as of 2026-09-
 - `ANTHROPIC_API_KEY` — set, working
 - `AUTH_JWT_SECRET` — set, working
 - `AUTH_DEMO_PASSWORD` — set, working
+- `GITHUB_TOKEN` — set, working (required for requests read/write)
 
 ### Secondary Vercel project (content-systems-platform-2l2p)
 - Not active — can be deleted when convenient
@@ -67,20 +71,21 @@ Authentication and client key routing are fully confirmed working as of 2026-09-
 ---
 
 ## Known issues
-
-- Old `ui/app/login/page.tsx` still exists in repo — unused, should be deleted
 - Root redirect hardcoded to `/demo` — update when second client is added
-- CSS variables (`var(--navy)` etc.) cause hydration failures in statically rendered pages. Replaced with direct hex values as workaround.
-- Branch divergence: if commits are made both from Claude and locally in the same session, pull before pushing locally.
+- CSS variables (`var(--navy)` etc.) cause hydration failures in statically rendered pages — replaced with direct hex values as workaround
+- Branch divergence: if commits are made both from Claude and locally in the same session, pull before pushing locally
 - Two Vercel projects exist — only main one is active
 
 ---
 
 ## On the horizon
 
-1. Delete old `ui/app/login/page.tsx` (cleanup)
-2. Remaining UI views: Requests, Logs, Domains, Admin
-3. Digest delivery method decision
-4. Setup and discovery process implementation
-5. Replace demo plaintext password with per-user bcrypt hashes before any real client onboarding
-6. Update root redirect when second client is added
+1. Logs view
+2. Domains view
+3. Admin view
+4. Notifications — email and/or Slack when request is created or updated
+5. Agent-to-request flow — agent can create a request from a conversation
+6. Digest delivery — weekly owner summary with request status
+7. Replace demo plaintext password with per-user bcrypt hashes before any real client onboarding
+8. Update root redirect when second client is added
+9. Delete secondary Vercel project (content-systems-platform-2l2p)
