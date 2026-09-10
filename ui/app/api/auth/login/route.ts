@@ -17,54 +17,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
   }
 
-  // Load client config from filesystem
-  let clientConfig: any;
-  try {
-    const configPath = path.join(process.cwd(), '..', 'clients', clientKey, 'config.json');
-    const raw = fs.readFileSync(configPath, 'utf-8');
-    clientConfig = JSON.parse(raw);
-  } catch {
-    return NextResponse.json({ error: 'Unknown client' }, { status: 400 });
-  }
-
-  // Find user
-  const user = clientConfig.users.find((u: any) => u.email === email);
-  if (!user) {
-    return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
-  }
-
-  // Check password hash from env
+  // Diagnostic: check env key and config path
   const envKey = emailToEnvKey(email);
+  const configPath = path.join(process.cwd(), '..', 'clients', clientKey, 'config.json');
   const hash = process.env[envKey];
-  if (!hash) {
-    return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+
+  const diag = {
+    envKey,
+    configPath,
+    hashExists: !!hash,
+    hashPrefix: hash ? hash.substring(0, 10) : null,
+    cwd: process.cwd(),
+    allAuthKeys: Object.keys(process.env).filter(k => k.startsWith('AUTH')),
+  };
+
+  // Try loading config
+  let configExists = false;
+  let userFound = false;
+  try {
+    const raw = fs.readFileSync(configPath, 'utf-8');
+    const clientConfig = JSON.parse(raw);
+    configExists = true;
+    userFound = !!clientConfig.users.find((u: any) => u.email === email);
+  } catch (e: any) {
+    return NextResponse.json({ error: 'Config load failed', detail: e.message, diag }, { status: 500 });
   }
 
-  const valid = await bcrypt.compare(password, hash);
-  if (!valid) {
-    return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
-  }
-
-  // Issue JWT
-  const token = await new SignJWT({
-    sub: user.email,
-    name: user.name,
-    role: user.role,
-    domains: user.domains,
-    clientKey,
-  })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setExpirationTime('8h')
-    .sign(JWT_SECRET);
-
-  const response = NextResponse.json({ ok: true, name: user.name, role: user.role });
-  response.cookies.set('session', token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 8,
-    path: '/',
-  });
-
-  return response;
+  return NextResponse.json({ diag, configExists, userFound }, { status: 200 });
 }
