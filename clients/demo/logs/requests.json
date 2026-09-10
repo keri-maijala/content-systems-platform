@@ -6,7 +6,7 @@
       "detail": "We need a rule for when and where to use \"learn more\" as link text. It comes up constantly in marketing and product and we have no consistent guidance.",
       "type": "direct",
       "domain": "marketing",
-      "status": "open",
+      "status": "in_progress",
       "originator": "taylor@acme.com",
       "originatorName": "Taylor Brooks",
       "owner": "jordan@acme.com",
@@ -15,7 +15,7 @@
         "alex@acme.com"
       ],
       "createdAt": "2026-09-08T14:23:00Z",
-      "updatedAt": "2026-09-08T14:23:00Z",
+      "updatedAt": "2026-09-10T17:29:23.605Z",
       "resolvedAt": null,
       "agentSessionId": null
     },
