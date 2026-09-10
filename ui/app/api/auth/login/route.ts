@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { SignJWT } from 'jose';
-import clientsIndex from '@/clients/index.json';
+import fs from 'fs';
+import path from 'path';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.AUTH_JWT_SECRET || '');
 
@@ -16,15 +17,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
   }
 
-  // Load client config
-  let clientConfig;
+  // Load client config from filesystem
+  let clientConfig: any;
   try {
-    clientConfig = (await import(`@/clients/${clientKey}/config.json`)).default;
+    const configPath = path.join(process.cwd(), '..', 'clients', clientKey, 'config.json');
+    const raw = fs.readFileSync(configPath, 'utf-8');
+    clientConfig = JSON.parse(raw);
   } catch {
     return NextResponse.json({ error: 'Unknown client' }, { status: 400 });
   }
 
-  // Find user in client config
+  // Find user
   const user = clientConfig.users.find((u: any) => u.email === email);
   if (!user) {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
