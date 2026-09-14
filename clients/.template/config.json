@@ -1,10 +1,16 @@
 {
+  "schema": {
+    "version": "1.1",
+    "format": "content-systems-platform",
+    "updated_at": ""
+  },
+
   "client": {
     "key": "",
     "name": "",
     "engagement": {
       "active": false,
-      "consultant": "keri@example.com"
+      "consultant": "keri@contentsystems.co"
     }
   },
 
@@ -43,8 +49,17 @@
       "id": "",
       "name": "",
       "email": "",
-      "role": "contributor",
-      "domains": []
+      "role": "content_owner",
+      "domains": [],
+      "coverage": {
+        "backups": [],
+        "ooo": {
+          "active": false,
+          "active_from": null,
+          "active_until": null,
+          "designate": null
+        }
+      }
     }
   ],
 
@@ -60,6 +75,7 @@
           "relationship": "informed"
         }
       ],
+      "designates": [],
       "override_permitted": true,
       "override_flagging": {
         "enabled": true,
@@ -85,7 +101,7 @@
   "escalation": {
     "default_path": "internal",
     "consultant_escalation": false,
-    "consultant_email": "keri@example.com",
+    "consultant_email": "keri@contentsystems.co",
     "conditions": ""
   },
 
