@@ -13,12 +13,12 @@ interface NavProps {
 
 export default function Nav({ role, userName, activeDomains = [], activeView, onViewChange, onSignOut }: NavProps) {
   const navItems = [
-    { id: 'agent',            label: 'Agent',            roles: ['contributor', 'domain_owner', 'content_owner'] },
-    { id: 'requests',         label: 'Requests',         roles: ['contributor', 'domain_owner', 'content_owner'] },
-    { id: 'outgoing',         label: 'Outgoing requests', roles: ['contributor', 'domain_owner', 'content_owner'] },
-    { id: 'logs',             label: 'Logs',             roles: ['domain_owner', 'content_owner'] },
-    { id: 'domains',          label: 'Domains',          roles: ['domain_owner', 'content_owner'] },
-    { id: 'admin',            label: 'Admin',            roles: ['content_owner'] },
+    { id: 'agent',    label: 'Agent',             roles: ['contributor', 'domain_owner', 'content_owner'] },
+    { id: 'requests', label: 'Requests',          roles: ['contributor', 'domain_owner', 'content_owner'] },
+    { id: 'outgoing', label: 'Outgoing requests', roles: ['contributor', 'domain_owner', 'content_owner'] },
+    { id: 'logs',     label: 'Logs',              roles: ['domain_owner', 'content_owner'] },
+    { id: 'domains',  label: 'Domains',           roles: ['domain_owner', 'content_owner'] },
+    { id: 'admin',    label: 'Admin',             roles: ['content_owner'] },
   ];
 
   const visibleItems = navItems.filter(item => item.roles.includes(role));
@@ -57,7 +57,7 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
       </div>
 
       {/* Nav items */}
-      <div style={{ flex: 1, padding: '12px 0' }}>
+      <div style={{ flex: 1, padding: '12px 8px' }}>
         {visibleItems.map(item => {
           const isActive = activeView === item.id;
           return (
@@ -69,8 +69,7 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
                 width: '100%',
                 textAlign: 'left',
                 padding: '9px 16px',
-                margin: '1px 8px',
-                width: 'calc(100% - 16px)',
+                marginBottom: '1px',
                 background: isActive ? '#FFFFFF' : 'transparent',
                 border: 'none',
                 borderRadius: '6px',
@@ -89,7 +88,7 @@ export default function Nav({ role, userName, activeDomains = [], activeView, on
 
         {/* Domain labels */}
         {(role === 'domain_owner' || role === 'content_owner') && activeDomains.length > 0 && (
-          <div style={{ marginTop: '20px', padding: '0 24px' }}>
+          <div style={{ marginTop: '20px', padding: '0 16px' }}>
             <div style={{
               fontSize: '10px',
               color: 'var(--text-muted)',
