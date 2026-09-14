@@ -137,7 +137,7 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      backgroundColor: 'var(--paper-mid)', // lighter than nav (#EAE5D8), not white
+      backgroundColor: '#F6F3EE', // lighter than nav (#EAE5D8), not white
     }}>
 
       {isEmpty ? (
@@ -153,7 +153,7 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
           {/* Heading — aligned with first nav item */}
           <div style={{ marginBottom: '20px' }}>
             <h1 style={{
-              fontSize: '16px',
+              fontSize: '24px',
               fontWeight: 700,
               color: 'var(--ink)',
               fontFamily: 'var(--font-display)',
@@ -401,3 +401,4 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
     </div>
   );
 }
+
