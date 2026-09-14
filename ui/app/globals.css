@@ -1,23 +1,46 @@
-@import '@fontsource/fraunces/400.css';
-@import '@fontsource/fraunces/600.css';
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/500.css';
-@import '@fontsource/inter/600.css';
+@import '@fontsource/plus-jakarta-sans/400.css';
+@import '@fontsource/plus-jakarta-sans/500.css';
+@import '@fontsource/plus-jakarta-sans/600.css';
+@import '@fontsource/plus-jakarta-sans/700.css';
+@import '@fontsource/playfair-display/400.css';
+@import '@fontsource/playfair-display/600.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg: #F7F6F3;
-  --bg-secondary: #E8E4DC;
-  --navy: #1A1A2E;
-  --blue: #4A6FA5;
-  --green: #2D5016;
-  --text: #1A1A2E;
-  --text-muted: #6B7280;
-  --border: #D9D4C9;
-  --white: #FFFFFF;
-  --agent-bg: #FFFFFF;
+  /* Core palette */
+  --ink:        #17212B;
+  --paper:      #F7F2E8;
+  --paper-mid:  #EDE8DC;
+  --paper-dark: #DDD8CC;
+  --teal:       #008C95;
+  --teal-light: #E0F2F3;
+  --red:        #E34F43;
+  --red-light:  #FDECEA;
+  --marigold:   #E9A72F;
+  --marigold-light: #FDF3DC;
+  --aqua:       #8BC9C4;
+  --lilac:      #B9A4D0;
+  --white:      #FFFFFF;
+
+  /* Semantic aliases */
+  --bg:         var(--paper);
+  --bg-mid:     var(--paper-mid);
+  --bg-dark:    var(--paper-dark);
+  --text:       var(--ink);
+  --text-muted: #5C6770;
+  --border:     #D6D0C4;
+  --border-mid: #C8C2B4;
+
+  /* Typography */
+  --font-ui:      'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+
+  /* Radii */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
 }
 
 * {
@@ -30,18 +53,24 @@ html, body {
   height: 100%;
   background-color: var(--bg);
   color: var(--text);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 15px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4 {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: var(--font-ui);
   line-height: 1.25;
   font-weight: 600;
 }
 
-.font-display {
-  font-family: 'Fraunces', Georgia, serif;
+.display {
+  font-family: var(--font-display);
 }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--paper-dark); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-mid); }
