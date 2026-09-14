@@ -127,26 +127,31 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
 
   const isEmpty = messages.length === 0;
 
+  // Nav top padding is 28px, then wordmark, then 24px bottom padding + border.
+  // First nav item sits at roughly 28 + wordmark height (~40px) + 24 + border + 12px item padding = ~108px from top.
+  // We match that with paddingTop on the empty state heading.
+  const NAV_FIRST_ITEM_TOP = 108;
+
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      backgroundColor: 'var(--white)',
+      backgroundColor: 'var(--paper-mid)', // lighter than nav (#EAE5D8), not white
     }}>
 
       {isEmpty ? (
-        /* ── Empty state: composer top-anchored, aligned with nav header ── */
+        /* ── Empty state ── */
         <div style={{
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          padding: '28px 36px 36px',
+          padding: `${NAV_FIRST_ITEM_TOP}px 36px 36px`,
           maxWidth: '680px',
           width: '100%',
         }}>
-          {/* Heading — sits at same height as nav wordmark */}
-          <div style={{ marginBottom: '24px' }}>
+          {/* Heading — aligned with first nav item */}
+          <div style={{ marginBottom: '20px' }}>
             <h1 style={{
               fontSize: '16px',
               fontWeight: 700,
@@ -160,11 +165,11 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
             <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{clientName}</span>
           </div>
 
-          {/* Composer */}
+          {/* Composer — white background */}
           <div style={{
             border: '1px solid var(--border)',
             borderRadius: 'var(--radius-md)',
-            backgroundColor: 'var(--bg)',
+            backgroundColor: 'var(--white)',
             overflow: 'hidden',
           }}>
             <textarea
@@ -193,13 +198,14 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
               justifyContent: 'flex-end',
               padding: '8px 12px',
               borderTop: '1px solid var(--border)',
+              backgroundColor: 'var(--white)',
             }}>
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || loading}
                 style={{
                   padding: '7px 16px',
-                  backgroundColor: input.trim() && !loading ? 'var(--ink)' : 'var(--bg-mid)',
+                  backgroundColor: input.trim() && !loading ? 'var(--teal)' : 'var(--bg-mid)',
                   color: input.trim() && !loading ? 'var(--white)' : 'var(--text-muted)',
                   border: 'none',
                   borderRadius: 'var(--radius-sm)',
@@ -258,7 +264,6 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
       ) : (
         /* ── Active conversation ── */
         <>
-          {/* Slim header — no bottom border */}
           <div style={{
             padding: '18px 36px 0',
             flexShrink: 0,
@@ -278,7 +283,6 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
             <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{clientName}</span>
           </div>
 
-          {/* Messages */}
           <div style={{
             flex: 1,
             overflowY: 'auto',
@@ -302,11 +306,12 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
                   borderRadius: msg.role === 'user'
                     ? 'var(--radius-md) var(--radius-md) 4px var(--radius-md)'
                     : 'var(--radius-md) var(--radius-md) var(--radius-md) 4px',
-                  backgroundColor: msg.role === 'user' ? 'var(--ink)' : 'var(--bg-mid)',
+                  backgroundColor: msg.role === 'user' ? 'var(--ink)' : 'var(--white)',
                   color: msg.role === 'user' ? 'var(--white)' : 'var(--ink)',
                   fontSize: '14px',
                   lineHeight: 1.65,
                   whiteSpace: 'pre-wrap',
+                  border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none',
                 }}>
                   {msg.content || (loading && i === messages.length - 1 ? '…' : '')}
                 </div>
@@ -323,7 +328,6 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
             <div ref={bottomRef} />
           </div>
 
-          {/* Input bar */}
           <div style={{
             padding: '16px 36px',
             borderTop: '1px solid var(--border)',
@@ -352,7 +356,7 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
                   fontSize: '14px',
                   fontFamily: 'var(--font-ui)',
                   color: 'var(--ink)',
-                  backgroundColor: 'var(--bg)',
+                  backgroundColor: 'var(--white)',
                   outline: 'none',
                   lineHeight: 1.55,
                   minHeight: '42px',
@@ -368,7 +372,7 @@ export default function AgentWorkspace({ userName, clientName, clientKey, user }
                 disabled={!input.trim() || loading}
                 style={{
                   padding: '10px 18px',
-                  backgroundColor: input.trim() && !loading ? 'var(--ink)' : 'var(--bg-mid)',
+                  backgroundColor: input.trim() && !loading ? 'var(--teal)' : 'var(--bg-mid)',
                   color: input.trim() && !loading ? 'var(--white)' : 'var(--text-muted)',
                   border: 'none',
                   borderRadius: 'var(--radius-sm)',
