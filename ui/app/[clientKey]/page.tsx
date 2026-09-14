@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Nav from '../components/Nav';
 import AgentWorkspace from '../components/AgentWorkspace';
 import RequestsView from '../components/RequestsView';
+import DomainsView from '../components/DomainsView';
 import PlaceholderView from '../components/PlaceholderView';
 
 type Role = 'contributor' | 'domain_owner' | 'content_owner';
@@ -156,10 +157,7 @@ function AppShell() {
         );
       case 'domains':
         return (
-          <PlaceholderView
-            title="Domains"
-            description="Domain configuration — owners, stakeholders, routing, and override permissions. This view is coming in a future build."
-          />
+          <DomainsView role={role} ownedDomains={user?.domains || []} />
         );
       case 'admin':
         return (
