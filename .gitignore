@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+ui/node_modules/
+
+# Next.js
+ui/.next/
+ui/out/
+
+# Environment
+.env.local
+ui/.env.local
+*.env.local
+
+# Build
+ui/build/
+
+# OS
+.DS_Store
